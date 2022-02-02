@@ -75,5 +75,6 @@ if __name__ == "__main__":
   init()
   img = frames_to_img(0, 0) #Generate image from states
   matrix.SetImage(img) #Show em
+  print(img)
   while True:
     pass

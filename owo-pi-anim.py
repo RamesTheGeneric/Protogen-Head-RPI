@@ -12,7 +12,7 @@ DO_AUTO_BLINKS = True
 
 FRAME_WIDTH = 64
 FRAME_HEIGHT = 16
-col = [255, 0, 0] #Color of pixels
+col = [255,150, 0] #Color of pixels
 current_eye_state = 0
 update_ready = True
 
