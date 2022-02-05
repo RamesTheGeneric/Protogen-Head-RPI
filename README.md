@@ -9,3 +9,5 @@ OpenCV 2
 Pillow
 RGBledMatrix
 Numpy
+memory-tempfile
+
