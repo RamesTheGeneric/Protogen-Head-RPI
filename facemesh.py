@@ -1,4 +1,5 @@
 # For static images:
+import math
 import sys
 import cv2
 import mediapipe as mp
@@ -23,6 +24,11 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
     image[:] = color
 
     return image
+
+def dist():
+  print("yeah")
+
+
 
 ## Whole face 
 
@@ -89,11 +95,14 @@ with mp_face_mesh.FaceMesh(
     # Print and draw face mesh landmarks on the image.
     if not results.multi_face_landmarks:
       continue
+    
     height, width, channels = image.shape
+
     #annotated_image = image.copy()
     annotated_image = create_blank(width, height, rgb_color = color) #Makes blank bg image
     for face_landmarks in results.multi_face_landmarks:
       #print('face_landmarks:', face_landmarks)
+      '''
       mp_drawing.draw_landmarks(
           image=annotated_image,
           landmark_list=face_landmarks,
@@ -101,6 +110,7 @@ with mp_face_mesh.FaceMesh(
           landmark_drawing_spec=None,
           connection_drawing_spec=mp_drawing_styles
           .get_default_face_mesh_tesselation_style())
+      '''
       mp_drawing.draw_landmarks(
           image=annotated_image,
           landmark_list=face_landmarks,
@@ -117,7 +127,8 @@ with mp_face_mesh.FaceMesh(
           .get_default_face_mesh_iris_connections_style())
 #    cv2.imwrite("training_images/New folder/" + 'test' + str(idx + 1) + '.png', annotated_image)
 
-# Converts the specified mouth landmarks into a usable float to the nearest .001
+# Converts the specified mouth landmarks into a usable float to the nearest .001 and returns pixel coords
+    
     sub_landmarks = np.asarray(face_landmarks.landmark[61])
     sub_landmarks = str(sub_landmarks)
     x = sub_landmarks.find("x:")
@@ -159,12 +170,133 @@ with mp_face_mesh.FaceMesh(
     lm291 = [x, y]
 
 
-    # Crop the frame to the mouth with the given coords
+    #eyes L
 
-    crop = annotated_image[height - lm0[1]:lm61[0], height - lm17[1]:lm291[0]]
+    sub_landmarks = np.asarray(face_landmarks.landmark[468])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    puiple_L = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[33])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    outer_eyeL = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[133])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    inner_eyeL = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[159])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    upper_eyeL = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[145])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    lower_eyeL = [x, y]
+
+    dist_x = math.sqrt(((outer_eyeL[0] - inner_eyeL[0]) ** 2) + ((outer_eyeL[1] - inner_eyeL[1]) ** 2))
+    
+    # eyes R
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[473])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    puiple_L = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[163])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    outer_eyeR = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[362])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    inner_eyeR = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[386])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    upper_eyeR = [x, y]
+
+    sub_landmarks = np.asarray(face_landmarks.landmark[374])
+    sub_landmarks = str(sub_landmarks)
+    x = sub_landmarks.find("x:")
+    x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
+    y = sub_landmarks.find("y:")
+    y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
+    lower_eyeR = [x, y]
+
+
+
+
+
+    #annotated_image = cv2.circle(annotated_image, (lm475[0], lm475[1]), 10, (0, 255, 0), 1)
+
+    # Crop the frame to the mouth with the given coords
+    percentage = 2.5
+    x = int(width * percentage / 100)
+    y = int(height * percentage / 100)
+    buffer = [x, y]     # Expands crop region by percentage of canvas
+
+    p1y = min(lm0[1], lm61[1], lm291[1])
+    p2y = max(lm17[1], lm61[1], lm291[1])
+
+    crop = annotated_image[p1y - buffer[1]:p2y + buffer[1], lm61[0] - buffer[0]:lm291[0] + buffer[0]]
     print("x: " + str(width) + " y: " + str(height))
     print("x: " + str(lm61[0]) + " y: " + str(lm0[1]))
     print("x: " + str(lm291[0]) + " y: " + str(lm17[1]))
+    print("eyeL: " + str(dist_x))
+    print("buffer: " + str(buffer))
     '''
     scale_percent = 50 # percent of original size
     width = int(crop.shape[1] * scale_percent / 100)
@@ -175,7 +307,7 @@ with mp_face_mesh.FaceMesh(
     resized = cv2.resize(crop, dim, interpolation = cv2.INTER_AREA)
     '''
     cv2.imshow("Image", crop)
-    cv2.imwrite("yeah.png", crop)
+    #cv2.imwrite("yeah.png", crop)
     cv2.waitKey(0)
 
 
