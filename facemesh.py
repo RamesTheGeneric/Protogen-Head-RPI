@@ -1,4 +1,5 @@
 # For static images:
+import sys
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -23,7 +24,7 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
 
     return image
 
-## Whole face Image
+## Whole face 
 
 """
 IMAGE_FILES = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', "23.jpg", '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg', '29.jpg']
@@ -72,7 +73,8 @@ with mp_face_mesh.FaceMesh(
     #cv2.waitKey(0)
     """
 
-IMAGE_FILES = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', "23.jpg", '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg', '29.jpg']
+#IMAGE_FILES = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", '15.jpg', '16.jpg', '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', "23.jpg", '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg', '29.jpg']
+IMAGE_FILES = ["1.jpg"]
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 with mp_face_mesh.FaceMesh(
     static_image_mode=True,
@@ -120,42 +122,50 @@ with mp_face_mesh.FaceMesh(
     sub_landmarks = str(sub_landmarks)
     x = sub_landmarks.find("x:")
     x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
     lm61 = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[0])
     sub_landmarks = str(sub_landmarks)
     x = sub_landmarks.find("x:")
     x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
     lm0 = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[17])
     sub_landmarks = str(sub_landmarks)
     x = sub_landmarks.find("x:")
     x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
     lm17 = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[291])
     sub_landmarks = str(sub_landmarks)
     x = sub_landmarks.find("x:")
     x = float(sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7])
+    x = int(x * width)
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
+    y = int(y * height)
     lm291 = [x, y]
 
 
     # Crop the frame to the mouth with the given coords
-    crop = annotated_image[int((lm61[0] * width)):int((lm0[1] * height)), int((lm291[0] * width)):int((lm17[1] * height))]
+
+    crop = annotated_image[height - lm0[1]:lm61[0], height - lm17[1]:lm291[0]]
     print("x: " + str(width) + " y: " + str(height))
-    print("x: " + str(int(lm61[0] * width)) + " y: " + str((int(lm0[1] * height))))
-    print(lm0)
-    print(lm17)
-    print(lm291)
+    print("x: " + str(lm61[0]) + " y: " + str(lm0[1]))
+    print("x: " + str(lm291[0]) + " y: " + str(lm17[1]))
+    '''
     scale_percent = 50 # percent of original size
     width = int(crop.shape[1] * scale_percent / 100)
     height = int(crop.shape[0] * scale_percent / 100)
@@ -163,13 +173,11 @@ with mp_face_mesh.FaceMesh(
  
     # resize image
     resized = cv2.resize(crop, dim, interpolation = cv2.INTER_AREA)
-    cv2.imshow("Image", resized)
+    '''
+    cv2.imshow("Image", crop)
+    cv2.imwrite("yeah.png", crop)
     cv2.waitKey(0)
 
-
-
-
-# Video Output
 
 '''
 
