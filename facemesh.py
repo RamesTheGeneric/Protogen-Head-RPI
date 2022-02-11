@@ -25,9 +25,9 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
 
     return image
 
-def dist():
-  print("yeah")
-
+def dist(x2, x1, y2, y1):
+  dist = math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))
+  return dist
 
 
 ## Whole face 
@@ -170,7 +170,7 @@ with mp_face_mesh.FaceMesh(
     lm291 = [x, y]
 
 
-    #eyes L
+    #eyes R
 
     sub_landmarks = np.asarray(face_landmarks.landmark[468])
     sub_landmarks = str(sub_landmarks)
@@ -180,7 +180,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    puiple_L = [x, y]
+    puiple_R = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[33])
     sub_landmarks = str(sub_landmarks)
@@ -190,7 +190,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    outer_eyeL = [x, y]
+    outer_eyeR = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[133])
     sub_landmarks = str(sub_landmarks)
@@ -200,7 +200,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    inner_eyeL = [x, y]
+    inner_eyeR = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[159])
     sub_landmarks = str(sub_landmarks)
@@ -210,7 +210,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    upper_eyeL = [x, y]
+    upper_eyeR = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[145])
     sub_landmarks = str(sub_landmarks)
@@ -220,9 +220,20 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    lower_eyeL = [x, y]
+    lower_eyeR = [x, y]
 
-    dist_x = math.sqrt(((outer_eyeL[0] - inner_eyeL[0]) ** 2) + ((outer_eyeL[1] - inner_eyeL[1]) ** 2))
+                # Calculate EyeL Gaze coordinates (0.0 - 1.0)
+    distr_x = dist(outer_eyeR[0], inner_eyeR[0], outer_eyeR[1], inner_eyeR[1])
+    distr_y = dist(lower_eyeR[0], upper_eyeR[0], lower_eyeR[1], upper_eyeR[1])
+    puiple_distr_x = dist(outer_eyeR[0], puiple_R[0], outer_eyeR[1], puiple_R[1])
+    puiple_distr_y = dist(lower_eyeR[0], puiple_R[0], lower_eyeR[1], puiple_R[1])
+    gazeR_x = puiple_distr_x / distr_x
+    gazeR_y = puiple_distr_y / distr_y
+    print("GazeR X: " + str(gazeR_x))
+    print("GazeR Y: " + str(gazeR_y))
+
+
+
     
     # eyes R
 
@@ -244,7 +255,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    outer_eyeR = [x, y]
+    outer_eyeL = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[362])
     sub_landmarks = str(sub_landmarks)
@@ -254,7 +265,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    inner_eyeR = [x, y]
+    inner_eyeL = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[386])
     sub_landmarks = str(sub_landmarks)
@@ -264,7 +275,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    upper_eyeR = [x, y]
+    upper_eyeL = [x, y]
 
     sub_landmarks = np.asarray(face_landmarks.landmark[374])
     sub_landmarks = str(sub_landmarks)
@@ -274,7 +285,7 @@ with mp_face_mesh.FaceMesh(
     y = sub_landmarks.find("y:")
     y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
     y = int(y * height)
-    lower_eyeR = [x, y]
+    lower_eyeL = [x, y]
 
 
 
@@ -295,18 +306,19 @@ with mp_face_mesh.FaceMesh(
     print("x: " + str(width) + " y: " + str(height))
     print("x: " + str(lm61[0]) + " y: " + str(lm0[1]))
     print("x: " + str(lm291[0]) + " y: " + str(lm17[1]))
-    print("eyeL: " + str(dist_x))
+    print("dist X: " + str(distr_x))
+    print("dis Y: " + str(distr_y))
     print("buffer: " + str(buffer))
-    '''
+    
     scale_percent = 50 # percent of original size
-    width = int(crop.shape[1] * scale_percent / 100)
-    height = int(crop.shape[0] * scale_percent / 100)
+    width = int(annotated_image.shape[1] * scale_percent / 100)
+    height = int(annotated_image.shape[0] * scale_percent / 100)
     dim = (width, height)
  
     # resize image
-    resized = cv2.resize(crop, dim, interpolation = cv2.INTER_AREA)
-    '''
-    cv2.imshow("Image", crop)
+    resized = cv2.resize(annotated_image, dim, interpolation = cv2.INTER_AREA)
+    
+    cv2.imshow("Image", resized)
     #cv2.imwrite("yeah.png", crop)
     cv2.waitKey(0)
 
