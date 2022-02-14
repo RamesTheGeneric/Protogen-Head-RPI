@@ -4,6 +4,7 @@ from PIL import Image, ImageOps
 import time, math, random, threading, os
 import rgbmatrix
 import cv2
+import facemesh
 
 
 matrix = None
@@ -55,6 +56,7 @@ img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with
 img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
 img_out.paste(im_pil, (0, 0)) #Write image on L_Display
 matrix.SetImage(img_out) #Display on matricies
+
 
 cv2.imshow('img_out', np.asarray(img_out))
 cv2.waitKey(0)

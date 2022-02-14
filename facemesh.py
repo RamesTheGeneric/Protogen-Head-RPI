@@ -6,14 +6,14 @@ import mediapipe as mp
 import numpy as np
 import os
 import PIL
-from lobe import ImageModel
+#from lobe import ImageModel
 from PIL import Image
 from mediapipe.framework.formats import landmark_pb2
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_mesh = mp.solutions.face_mesh
 
-model = ImageModel.load('model/training_images TFLite')
+#model = ImageModel.load('model/training_images TFLite')
 
 color = (0, 0 ,0 )
 def create_blank(width, height, rgb_color=(0, 0, 0)):
@@ -53,8 +53,8 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-width = 1920
-height = 1080
+width = 640
+height = 360
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 with mp_face_mesh.FaceMesh(
@@ -171,18 +171,11 @@ with mp_face_mesh.FaceMesh(
     p2y = max(lm17[1], lm61[1], lm291[1])
 
     crop = image[p1y - buffer[1]:p2y + buffer[1], lm61[0] - buffer[0]:lm291[0] + buffer[0]]
-    #print("x: " + str(width) + " y: " + str(height))
-    #print("x: " + str(lm61[0]) + " y: " + str(lm0[1]))
-    #print("x: " + str(lm291[0]) + " y: " + str(lm17[1]))
-    #print("dist X: " + str(distr_x))
-    #print("dist Y: " + str(distr_y))
-    #print("buffer: " + str(buffer))
     im_pil = Image.fromarray(crop)
     img_out = Image.new('RGB', (height, width))
-    result = model.predict(im_pil)
-    # Flip the image horizontally for a selfie-view display.
+    #result = model.predict(im_pil)
     cv2.imshow('MediaPipe Face Mesh', crop)
     cv2.imshow('camera', image)
-    print(result)
+    #print(result)
     if cv2.waitKey(5) & 0xFF == 27:
       break
