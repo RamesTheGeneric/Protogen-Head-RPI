@@ -17,12 +17,8 @@ mp_face_mesh = mp.solutions.face_mesh
 
 color = (0, 0 ,0 )
 def create_blank(width, height, rgb_color=(0, 0, 0)):
-    """Create new image(numpy array) filled with certain color in RGB"""
-    # Create black blank image
     image = np.zeros((height, width, 3), np.uint8)
-    # Since OpenCV uses BGR, convert the color first
     color = tuple(reversed(rgb_color))
-    # Fill image with color
     image[:] = color
 
     return image
@@ -160,7 +156,7 @@ with mp_face_mesh.FaceMesh(
     gazeL_y = NormalizeData([0.3225, gazeL_y, 0.6225])
 
 
-    print("GazeR X: " + str(gazeR_x[1]) + " GazeR Y: " + str(gazeR_y[1]) + " GazeL X: " + str(gazeL_x[1]) + " GazeL Y: " + str(gazeL_y[1]))
+    #print("GazeR X: " + str(gazeR_x[1]) + " GazeR Y: " + str(gazeR_y[1]) + " GazeL X: " + str(gazeL_x[1]) + " GazeL Y: " + str(gazeL_y[1]))
 
     # Crop the frame to the mouth with the given coords
     percentage = 2.5
@@ -169,13 +165,17 @@ with mp_face_mesh.FaceMesh(
     buffer = [x, y]     # Expands crop region by percentage of canvas
     p1y = min(lm0[1], lm61[1], lm291[1])
     p2y = max(lm17[1], lm61[1], lm291[1])
+    p1y = min(p1y, height - 25)
+    p2y = min(p2y, height - 5)
 
     crop = image[p1y - buffer[1]:p2y + buffer[1], lm61[0] - buffer[0]:lm291[0] + buffer[0]]
-    im_pil = Image.fromarray(crop)
+    #im_pil = Image.fromarray(crop)
     img_out = Image.new('RGB', (height, width))
     #result = model.predict(im_pil)
     cv2.imshow('MediaPipe Face Mesh', crop)
     cv2.imshow('camera', image)
+    print(p1y)
+    print(p2y)
     #print(result)
     if cv2.waitKey(5) & 0xFF == 27:
       break
