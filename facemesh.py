@@ -51,8 +51,10 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 width = 640
 height = 360
+'''
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+'''
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
     refine_landmarks=True,
@@ -156,7 +158,7 @@ with mp_face_mesh.FaceMesh(
     gazeL_y = NormalizeData([0.3225, gazeL_y, 0.6225])
 
 
-    #print("GazeR X: " + str(gazeR_x[1]) + " GazeR Y: " + str(gazeR_y[1]) + " GazeL X: " + str(gazeL_x[1]) + " GazeL Y: " + str(gazeL_y[1]))
+    print("GazeR X: " + str(gazeR_x[1]) + " GazeR Y: " + str(gazeR_y[1]) + " GazeL X: " + str(gazeL_x[1]) + " GazeL Y: " + str(gazeL_y[1]))
 
     # Crop the frame to the mouth with the given coords
     percentage = 2.5
@@ -174,8 +176,8 @@ with mp_face_mesh.FaceMesh(
     #result = model.predict(im_pil)
     cv2.imshow('MediaPipe Face Mesh', crop)
     cv2.imshow('camera', image)
-    print(p1y)
-    print(p2y)
+    #print(p1y)
+    #print(p2y)
     #print(result)
     if cv2.waitKey(5) & 0xFF == 27:
       break
