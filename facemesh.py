@@ -51,10 +51,10 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 width = 640
 height = 360
-'''
+
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-'''
+
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
     refine_landmarks=True,

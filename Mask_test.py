@@ -5,6 +5,7 @@ import time, math, random, threading, os
 import rgbmatrix
 import cv2
 import facemesh
+import subprocess
 
 
 matrix = None
