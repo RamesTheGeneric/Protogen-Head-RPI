@@ -12,8 +12,10 @@ from mediapipe.framework.formats import landmark_pb2
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_mesh = mp.solutions.face_mesh
+import keyboard
 
 #model = ImageModel.load('model/training_images TFLite')
+calibrated = False
 
 color = (0, 0 ,0 )
 def create_blank(width, height, rgb_color=(0, 0, 0)):
@@ -23,8 +25,19 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
 
     return image
 
+
+
+def average(lst):
+  return sum(lst) / len(lst)
+
 def dist(x2, x1, y2, y1):
   return math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))
+
+def slope(x2, x1, y2, y1):
+  return -((y2 - y1) / max((x2 - x1), 0.001))
+
+def calc_ref(x_coord, slope, offset):
+  return (-slope * x_coord) + offset
 
 def NormalizeData(data):
   return (data - np.min(data)) / (np.max(data) - np.min(data))
@@ -39,6 +52,9 @@ def coord_value(mplm):
   y = float(sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7])
   y = int(y * height)
   return [x, y]
+  
+idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 
@@ -49,8 +65,8 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-width = 640
-height = 360
+width = 1920
+height = 1080
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -80,7 +96,7 @@ with mp_face_mesh.FaceMesh(
     image = create_blank(width, height, rgb_color = color) #Makes blank bg image
     if results.multi_face_landmarks:
       for face_landmarks in results.multi_face_landmarks:
-        '''
+        
         mp_drawing.draw_landmarks(
             image=image,
             landmark_list=face_landmarks,
@@ -88,7 +104,7 @@ with mp_face_mesh.FaceMesh(
             landmark_drawing_spec=None,
             connection_drawing_spec=mp_drawing_styles
             .get_default_face_mesh_tesselation_style())
-            '''
+            
         mp_drawing.draw_landmarks(
             image=image,
             landmark_list=face_landmarks,
@@ -104,12 +120,45 @@ with mp_face_mesh.FaceMesh(
             connection_drawing_spec=mp_drawing_styles
             .get_default_face_mesh_iris_connections_style())
 
-    # Mouth
+    # Mouth Outer
 
-    lm61 = coord_value(face_landmarks.landmark[61])
-    lm0 = coord_value(face_landmarks.landmark[0])
-    lm17 = coord_value(face_landmarks.landmark[17])
-    lm291 = coord_value(face_landmarks.landmark[291])
+    lm61 = coord_value(face_landmarks.landmark[61])   #RightCorner
+    lm0 = coord_value(face_landmarks.landmark[0])   #Top
+    lm17 = coord_value(face_landmarks.landmark[17])   #Bottom 
+    lm291 = coord_value(face_landmarks.landmark[291])   #LeftCorner
+
+    
+    
+    # Mouth Inner
+    
+    # RightDisplay             # LeftDisplay
+    '''
+      191 80  81  82  13  312 311 310 415
+    78                                   308
+      95  88  178 87  14  317 402 318 324
+    '''
+
+      
+    lm78 = coord_value(face_landmarks.landmark[78])
+    lm191 = coord_value(face_landmarks.landmark[191])
+    lm80 = coord_value(face_landmarks.landmark[80])
+    lm81 = coord_value(face_landmarks.landmark[81])
+    lm82 = coord_value(face_landmarks.landmark[82])
+    lm13 = coord_value(face_landmarks.landmark[13])
+    lm312 = coord_value(face_landmarks.landmark[312])
+    lm311 = coord_value(face_landmarks.landmark[311])
+    lm310 = coord_value(face_landmarks.landmark[310])
+    lm415 = coord_value(face_landmarks.landmark[415])
+    lm308 = coord_value(face_landmarks.landmark[308])
+    lm324 = coord_value(face_landmarks.landmark[324])
+    lm318 = coord_value(face_landmarks.landmark[318])
+    lm402 = coord_value(face_landmarks.landmark[402])
+    lm317 = coord_value(face_landmarks.landmark[317])
+    lm14 = coord_value(face_landmarks.landmark[14])
+    lm87 = coord_value(face_landmarks.landmark[87])
+    lm178 = coord_value(face_landmarks.landmark[178])
+    lm88 = coord_value(face_landmarks.landmark[88])
+    lm95 = coord_value(face_landmarks.landmark[95])
 
     # eyes R
 
@@ -127,6 +176,119 @@ with mp_face_mesh.FaceMesh(
     upper_eyeL = coord_value(face_landmarks.landmark[257])
     lower_eyeL = coord_value(face_landmarks.landmark[253])
 
+    # Ref Points
+    
+    lm164 = coord_value(face_landmarks.landmark[164])   #First top point connecting to lips
+    lm18 = coord_value(face_landmarks.landmark[18])   #First bottom point connecitng to lips
+    x1, y1 = lm164
+    x2, y2 = lm18
+    center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
+
+    try: 
+      if keyboard.is_pressed('1') or calibrated == False:
+        print("BrUh")
+        idle_x[0] = lm78[0] - center_mouth[0]
+        idle_y[0] = lm78[1] - center_mouth[1]
+        idle_x[1] = lm191[0] - center_mouth[0]
+        idle_y[1] = lm191[1] - center_mouth[1]
+        idle_x[2] = lm80[0] - center_mouth[0]
+        idle_y[2] = lm80[1] - center_mouth[1]
+        idle_x[3] = lm81[0] - center_mouth[0]
+        idle_y[3] = lm81[1] - center_mouth[1]
+        idle_x[4] = lm82[0] - center_mouth[0]
+        idle_y[4] = lm82[1] - center_mouth[1]
+        idle_x[5] = lm13[0] - center_mouth[0]
+        idle_y[5] = lm13[1] - center_mouth[1]
+        idle_x[6] = lm312[0] - center_mouth[0]
+        idle_y[6] = lm312[1] - center_mouth[1]
+        idle_x[7] = lm311[0] - center_mouth[0]
+        idle_y[7] = lm311[1] - center_mouth[1]
+        idle_x[8] = lm310[0] - center_mouth[0]
+        idle_y[8] = lm310[1] - center_mouth[1]
+        idle_x[9] = lm415[0] - center_mouth[0]
+        idle_y[9] = lm415[1] - center_mouth[1]
+        idle_x[10] = lm308[0] - center_mouth[0]
+        idle_y[10] = lm308[1] - center_mouth[1]
+        idle_x[11] = lm324[0] - center_mouth[0]
+        idle_y[11] = lm324[1] - center_mouth[1]
+        idle_x[12] = lm318[0] - center_mouth[0]
+        idle_y[12] = lm318[1] - center_mouth[1]
+        idle_x[13] = lm402[0] - center_mouth[0]
+        idle_y[13] = lm402[1] - center_mouth[1]
+        idle_x[14] = lm317[0] - center_mouth[0]
+        idle_y[14] = lm317[1] - center_mouth[1]
+        idle_x[15] = lm14[0] - center_mouth[0]
+        idle_y[15] = lm14[1] - center_mouth[1]
+        idle_x[16] = lm87[0] - center_mouth[0]
+        idle_y[16] = lm87[1] - center_mouth[1]
+        idle_x[17] = lm178[0] - center_mouth[0]
+        idle_y[17] = lm178[1] - center_mouth[1]
+        idle_x[18] = lm88[0] - center_mouth[0]
+        idle_y[18] = lm88[1] - center_mouth[1]
+        idle_x[19] = lm95[0] - center_mouth[0]
+        idle_y[19] = lm95[1] - center_mouth[1]
+        calibrated = True
+        print("calib: " + str(idle_x))
+      else:
+        pass
+    except:
+      break
+    #else:
+      #print("KeyNotPressed")
+    #print("Idle_X: " + str(idle_x) + " Idle_Y: " + str(idle_y))
+
+    mouth_x = [idle_x[0] - (lm78[0] - center_mouth[0]), 
+    idle_x[1] - (lm191[0] - center_mouth[0]), 
+    idle_x[2] - (lm80[0] - center_mouth[0]), 
+    idle_x[3] - (lm81[0] - center_mouth[0]), 
+    idle_x[4] - (lm82[0] - center_mouth[0]), 
+    idle_x[5] - (lm13[0] - center_mouth[0]), 
+    idle_x[6] - (lm312[0] - center_mouth[0]), 
+    idle_x[7] - (lm311[0] - center_mouth[0]), 
+    idle_x[8] - (lm310[0] - center_mouth[0]), 
+    idle_x[9] - (lm415[0] - center_mouth[0]), 
+    idle_x[10] - (lm308[0] - center_mouth[0]), 
+    idle_x[11] - (lm324[0] - center_mouth[0]), 
+    idle_x[12] - (lm318[0] - center_mouth[0]),
+    idle_x[13] - (lm402[0] - center_mouth[0]),
+    idle_x[14] - (lm317[0] - center_mouth[0]),
+    idle_x[15] - (lm14[0] - center_mouth[0]),
+    idle_x[16] - (lm87[0] - center_mouth[0]),
+    idle_x[17] - (lm178[0] - center_mouth[0]),
+    idle_x[18] - (lm88[0] - center_mouth[0]),
+    idle_x[19] - (lm95[0] - center_mouth[0])
+    ]
+
+    mouth_y = [idle_y[0] - (lm78[1] - center_mouth[1]
+    ), 
+    idle_y[1] - (lm191[1] - center_mouth[1]), 
+    idle_y[2] - (lm80[1] - center_mouth[1]), 
+    idle_y[3] - (lm81[1] - center_mouth[1]), 
+    idle_y[4] - (lm82[1] - center_mouth[1]), 
+    idle_y[5] - (lm13[1] - center_mouth[1]), 
+    idle_y[6] - (lm312[1] - center_mouth[1]), 
+    idle_y[7] - (lm311[1] - center_mouth[1]), 
+    idle_y[8] - (lm310[1] - center_mouth[1]), 
+    idle_y[9] - (lm415[1] - center_mouth[1]), 
+    idle_y[10] - (lm308[1] - center_mouth[1]), 
+    idle_y[11] - (lm324[1] - center_mouth[1]), 
+    idle_y[12] - (lm318[1] - center_mouth[1]),
+    idle_y[13] - (lm402[1] - center_mouth[1]),
+    idle_y[14] - (lm317[1] - center_mouth[1]),
+    idle_y[15] - (lm14[1] - center_mouth[1]),
+    idle_y[16] - (lm87[1] - center_mouth[1]),
+    idle_y[17] - (lm178[1] - center_mouth[1]),
+    idle_y[18] - (lm88[1] - center_mouth[1]),
+    idle_y[19] - (lm95[1] - center_mouth[1])
+    ]
+
+
+
+
+    image = cv2.circle(image, (center_mouth[0], center_mouth[1]), 3, (0, 255, 0), 1)
+
+
+
               # Calculate EyeR Gaze coordinates (0.0 - 1.0)
               # x = 1.0 eye points towards face center
               # x = 0.0 eye points away face center
@@ -135,11 +297,8 @@ with mp_face_mesh.FaceMesh(
 
     distr_x = dist(outer_eyeR[0], inner_eyeR[0], outer_eyeR[1], inner_eyeR[1])
     distr_y = dist(lower_eyeR[0], upper_eyeR[0], lower_eyeR[1], upper_eyeR[1])
-    x_refr = inner_eyeR[0] - int(distr_x / 2)
-    y_refr = lower_eyeR[1] - int(distr_y / 2.4)
     puiple_distr_x = dist(outer_eyeR[0], puiple_R[0], outer_eyeR[1], puiple_R[1])
     puiple_distr_y = dist(lower_eyeR[0], puiple_R[0], lower_eyeR[1], puiple_R[1])
-    image = cv2.circle(image, (x_refr, y_refr), 3, (0, 255, 0), 1)
     gazeR_x = puiple_distr_x / distr_x
     gazeR_x = NormalizeData([0.26, gazeR_x, 0.70])
     gazeR_y = puiple_distr_y / distr_y
@@ -147,11 +306,8 @@ with mp_face_mesh.FaceMesh(
 
     distl_x = dist(outer_eyeL[0], inner_eyeL[0], outer_eyeL[1], inner_eyeL[1])
     distl_y = dist(lower_eyeL[0], upper_eyeL[0], lower_eyeL[1], upper_eyeL[1])
-    x_refl = (inner_eyeL[0] - int(distl_x / 2) * -1)
-    y_refl = lower_eyeL[1] - int(distl_y / 2.4)
     puiple_distl_x = dist(outer_eyeL[0], puiple_L[0], outer_eyeL[1], puiple_L[1])
     puiple_distl_y = dist(lower_eyeL[0], puiple_L[0], lower_eyeL[1], puiple_L[1])
-    image = cv2.circle(image, (x_refl, y_refl), 3, (0, 255, 0), 1)
     gazeL_x = puiple_distl_x / distl_x
     gazeL_x = NormalizeData([0.26, gazeL_x, 0.70])
     gazeL_y = puiple_distl_y / distl_y
@@ -179,5 +335,6 @@ with mp_face_mesh.FaceMesh(
     #print(p1y)
     #print(p2y)
     #print(result)
+
     if cv2.waitKey(5) & 0xFF == 27:
       break
