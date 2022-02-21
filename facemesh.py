@@ -8,7 +8,7 @@ import numpy as np
 import os
 from PIL import Image, ImageOps
 import time, math, random, threading, os
-import rgbmatrix
+#import rgbmatrix
 #from lobe import ImageModel
 from PIL import Image
 from mediapipe.framework.formats import landmark_pb2
@@ -87,8 +87,8 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-width = 1920
-height = 1080
+width = 640
+height = 480
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -361,7 +361,7 @@ with mp_face_mesh.FaceMesh(
         vector = myfile.readlines()
     print(vector)
 
-    w, h = 64, 32
+    w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
     ctx = cairo.Context (surface)
 
@@ -389,8 +389,6 @@ with mp_face_mesh.FaceMesh(
     array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
     
     # printing message when file is saved
-    cv2.imshow('img_out', np.asarray(array))
-    cv2.waitKey(0)
 
 
 
@@ -398,11 +396,11 @@ with mp_face_mesh.FaceMesh(
 
     image = create_blank(DISPLAY_WIDTH, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
 
-    maskimage = array   #Reads Mask image
-    ret, mask = cv2.threshold(maskimage, 127, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
+    maskimage = array  #Reads Mask image
+    ret, mask = cv2.threshold(maskimage, 250, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
     res = cv2.bitwise_and(image, mask)  #Mask the base image
-    up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
-    cv2.imshow('up_res', up_res)  #Display Image
+    #up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
+    #cv2.imshow('up_res', up_res)  #Display Image
 
 
     #Convert the image from CV2 to PIL
@@ -411,11 +409,10 @@ with mp_face_mesh.FaceMesh(
     img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with size of both panels
     img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
     img_out.paste(im_pil, (0, 0)) #Write image on L_Display
-    matrix.SetImage(img_out) #Display on matricies
+    #matrix.SetImage(img_out) #Display on matricies
 
 
     cv2.imshow('img_out', np.asarray(img_out))
-    cv2.waitKey(0)
     #print(p1y)
     #print(p2y)
     #print(result)
