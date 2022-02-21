@@ -1,11 +1,14 @@
 # For static images:
+import cairo
 import math
 import sys
 import cv2
 import mediapipe as mp
 import numpy as np
 import os
-import PIL
+from PIL import Image, ImageOps
+import time, math, random, threading, os
+import rgbmatrix
 #from lobe import ImageModel
 from PIL import Image
 from mediapipe.framework.formats import landmark_pb2
@@ -17,7 +20,26 @@ import keyboard
 #model = ImageModel.load('model/training_images TFLite')
 calibrated = False
 
-color = (0, 0 ,0 )
+matrix = None
+
+DISPLAY_WIDTH = 64     # L_DISPLAY 0-64, R_DISPLAY = 65-128
+DISPLAY_HEIGHT = 32
+IM_SCALE = 4
+
+color = (50, 200 , 50)
+
+def init():
+  global matrix
+  
+  options = rgbmatrix.RGBMatrixOptions()
+  options.rows = 32
+  options.cols = 64
+  options.chain_length = 2
+  options.parallel = 1
+  options.gpio_slowdown = 2
+  options.hardware_mapping = 'adafruit-hat'
+  matrix = rgbmatrix.RGBMatrix(options=options)
+
 def create_blank(width, height, rgb_color=(0, 0, 0)):
     image = np.zeros((height, width, 3), np.uint8)
     color = tuple(reversed(rgb_color))
@@ -332,6 +354,68 @@ with mp_face_mesh.FaceMesh(
     #result = model.predict(im_pil)
     cv2.imshow('MediaPipe Face Mesh', crop)
     cv2.imshow('camera', image)
+
+                                                ##  Draws Face Mask From Vectors
+
+    with open("mouth.svg", "r") as myfile:
+        vector = myfile.readlines()
+    print(vector)
+
+    w, h = 64, 32
+    surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
+    ctx = cairo.Context (surface)
+
+    # creating a cairo context object
+    ctx = cairo.Context(surface)
+    ctx.set_source_rgb(1, 1, 1)
+    # creating a arc with using close path method
+    ctx.move_to(61, 23)
+    ctx.line_to(52, 26)
+    ctx.line_to(49, 22)
+    ctx.line_to(42, 24)
+    ctx.line_to(24, 16.8)
+    ctx.line_to(24, 17.8)
+    ctx.line_to(26, 18.5)
+    ctx.line_to(42, 25)
+    ctx.line_to(48.5, 23)
+    ctx.line_to(51.5, 27)
+    ctx.line_to(62, 23.5)
+
+    # making close path
+    ctx.fill()
+
+    # getting fill extends
+    buf = surface.get_data()
+    array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
+    
+    # printing message when file is saved
+    cv2.imshow('img_out', np.asarray(array))
+    cv2.waitKey(0)
+
+
+
+                                                    ##  Draws Face Image from Mask
+
+    image = create_blank(DISPLAY_WIDTH, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
+
+    maskimage = array   #Reads Mask image
+    ret, mask = cv2.threshold(maskimage, 127, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
+    res = cv2.bitwise_and(image, mask)  #Mask the base image
+    up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
+    cv2.imshow('up_res', up_res)  #Display Image
+
+
+    #Convert the image from CV2 to PIL
+    init()
+    im_pil = Image.fromarray(res)
+    img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with size of both panels
+    img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
+    img_out.paste(im_pil, (0, 0)) #Write image on L_Display
+    matrix.SetImage(img_out) #Display on matricies
+
+
+    cv2.imshow('img_out', np.asarray(img_out))
+    cv2.waitKey(0)
     #print(p1y)
     #print(p2y)
     #print(result)
