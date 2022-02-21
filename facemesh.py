@@ -6,9 +6,10 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import os
+import PIL
 from PIL import Image, ImageOps
 import time, math, random, threading, os
-#import rgbmatrix
+import rgbmatrix
 #from lobe import ImageModel
 from PIL import Image
 from mediapipe.framework.formats import landmark_pb2
@@ -85,7 +86,7 @@ idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(3)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 width = 640
 height = 480
@@ -356,10 +357,7 @@ with mp_face_mesh.FaceMesh(
     cv2.imshow('camera', image)
 
                                                 ##  Draws Face Mask From Vectors
-
-    with open("mouth.svg", "r") as myfile:
-        vector = myfile.readlines()
-    print(vector)
+    
 
     w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
@@ -367,19 +365,24 @@ with mp_face_mesh.FaceMesh(
 
     # creating a cairo context object
     ctx = cairo.Context(surface)
+    ctx.set_source_rgb(0, 0, 0)
+    ctx.rectangle(0,0, width, height)
+    ctx.fill()
+
+
     ctx.set_source_rgb(1, 1, 1)
     # creating a arc with using close path method
     ctx.move_to(61, 23)
     ctx.line_to(52, 26)
     ctx.line_to(49, 22)
     ctx.line_to(42, 24)
-    ctx.line_to(24, 16.8)
-    ctx.line_to(24, 17.8)
-    ctx.line_to(26, 18.5)
+    ctx.line_to(24, 17)
+    ctx.line_to(24, 18)
+    ctx.line_to(26, 19)
     ctx.line_to(42, 25)
-    ctx.line_to(48.5, 23)
-    ctx.line_to(51.5, 27)
-    ctx.line_to(62, 23.5)
+    ctx.line_to(48, 23)
+    ctx.line_to(51, 27)
+    ctx.line_to(62, 24)
 
     # making close path
     ctx.fill()
@@ -387,6 +390,7 @@ with mp_face_mesh.FaceMesh(
     # getting fill extends
     buf = surface.get_data()
     array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
+    array = array[:,:,:3]
     
     # printing message when file is saved
 
@@ -395,27 +399,27 @@ with mp_face_mesh.FaceMesh(
                                                     ##  Draws Face Image from Mask
 
     image = create_blank(DISPLAY_WIDTH, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
-
-    maskimage = array  #Reads Mask image
-    ret, mask = cv2.threshold(maskimage, 250, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
-    res = cv2.bitwise_and(image, mask)  #Mask the base image
+    maskimage = array #Reads Mask image
+    ret, maskimage = cv2.threshold(maskimage, 50, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
+    cv2.imshow("yeah", maskimage)
+    res = cv2.bitwise_and(image, maskimage)  #Mask the base image
     #up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
     #cv2.imshow('up_res', up_res)  #Display Image
 
 
     #Convert the image from CV2 to PIL
-    init()
+    #init()
     im_pil = Image.fromarray(res)
     img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with size of both panels
     img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
     img_out.paste(im_pil, (0, 0)) #Write image on L_Display
-    #matrix.SetImage(img_out) #Display on matricies
+    matrix.SetImage(img_out) #Display on matricies
 
-
-    cv2.imshow('img_out', np.asarray(img_out))
+    up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
+    cv2.imshow('img_out', np.asarray(up_res))
     #print(p1y)
     #print(p2y)
     #print(result)
-
+    
     if cv2.waitKey(5) & 0xFF == 27:
       break
