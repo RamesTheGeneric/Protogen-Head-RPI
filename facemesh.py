@@ -9,7 +9,7 @@ import os
 import PIL
 from PIL import Image, ImageOps
 import time, math, random, threading, os
-import rgbmatrix
+#import rgbmatrix
 #from lobe import ImageModel
 from PIL import Image
 from mediapipe.framework.formats import landmark_pb2
@@ -86,7 +86,7 @@ idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(3)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 width = 640
 height = 480
@@ -358,7 +358,7 @@ with mp_face_mesh.FaceMesh(
 
                                                 ##  Draws Face Mask From Vectors
     
-
+    '''
     w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
     ctx = cairo.Context (surface)
@@ -413,13 +413,13 @@ with mp_face_mesh.FaceMesh(
     img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with size of both panels
     img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
     img_out.paste(im_pil, (0, 0)) #Write image on L_Display
-    matrix.SetImage(img_out) #Display on matricies
+    #matrix.SetImage(img_out) #Display on matricies
 
     up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
     cv2.imshow('img_out', np.asarray(up_res))
     #print(p1y)
     #print(p2y)
     #print(result)
-    
+    '''
     if cv2.waitKey(5) & 0xFF == 27:
       break
