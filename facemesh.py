@@ -364,6 +364,9 @@ with mp_face_mesh.FaceMesh(
     ctx = cairo.Context (surface)
 
     # creating a cairo context object
+    x_scale = 2
+    y_scale = 0.4
+
     ctx = cairo.Context(surface)
     ctx.set_source_rgb(0, 0, 0)
     ctx.rectangle(0,0, width, height)
@@ -372,17 +375,17 @@ with mp_face_mesh.FaceMesh(
 
     ctx.set_source_rgb(1, 1, 1)
     # creating a arc with using close path method
-    ctx.move_to(61, 23)
-    ctx.line_to(52, 26)
-    ctx.line_to(49, 22)
-    ctx.line_to(42, 24)
-    ctx.line_to(24, 17)
-    ctx.line_to(24, 18)
-    ctx.line_to(26, 19)
-    ctx.line_to(42, 25)
-    ctx.line_to(48, 23)
-    ctx.line_to(51, 27)
-    ctx.line_to(62, 24)
+    ctx.move_to(61 - (mouth_x[5] * x_scale), 23 - (mouth_y[5] * y_scale))
+    ctx.line_to(52 - (mouth_x[4] * x_scale), 26 - (mouth_y[4] * y_scale))
+    ctx.line_to(49 - (mouth_x[3] * x_scale), 22 - (mouth_y[3] * y_scale))
+    ctx.line_to(42 - (mouth_x[2] * x_scale), 24 - (mouth_y[2] * y_scale))
+    ctx.line_to(24 - (mouth_x[0] * x_scale), 17 - (mouth_y[0] * y_scale))
+    ctx.line_to(24 - (mouth_x[0] * x_scale), 18 - (mouth_y[0] * y_scale))
+    ctx.line_to(26 - (mouth_x[0] * x_scale), 19 - (mouth_y[0] * y_scale))
+    ctx.line_to(42 - (mouth_x[18] * x_scale), 25 - (mouth_y[18] * y_scale))
+    ctx.line_to(48 - (mouth_x[17] * x_scale), 23 - (mouth_y[17] * y_scale))
+    ctx.line_to(51 - (mouth_x[16] * x_scale), 27 - (mouth_y[16] * y_scale))
+    ctx.line_to(62 - (mouth_x[15] * x_scale), 24 - (mouth_y[15] * y_scale))
 
     # making close path
     ctx.fill()
@@ -391,6 +394,7 @@ with mp_face_mesh.FaceMesh(
     buf = surface.get_data()
     array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
     array = array[:,:,:3]
+    cv2.imshow("array", array)
     
     # printing message when file is saved
 
