@@ -208,7 +208,7 @@ with mp_face_mesh.FaceMesh(
     center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
 
     try: 
-      if keyboard.is_pressed('1') or calibrated == False:
+      if keyboard.is_pressed('1') or calibrated == False:         #####   REMOVE KEYBOARD CONDITION FOR RPI!!!!!!!!!!!!!!!!
         print("BrUh")
         idle_x[0] = lm78[0] - center_mouth[0]
         idle_y[0] = lm78[1] - center_mouth[1]
@@ -358,7 +358,7 @@ with mp_face_mesh.FaceMesh(
 
                                                 ##  Draws Face Mask From Vectors
     
-    '''
+    
     w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
     ctx = cairo.Context (surface)
@@ -420,6 +420,6 @@ with mp_face_mesh.FaceMesh(
     #print(p1y)
     #print(p2y)
     #print(result)
-    '''
+    
     if cv2.waitKey(5) & 0xFF == 27:
       break
