@@ -372,9 +372,9 @@ with mp_face_mesh.FaceMesh(
     ctx.rectangle(0,0, width, height)
     ctx.fill()
 
-
+                                      # RightFace
     ctx.set_source_rgb(1, 1, 1)
-    # creating a arc with using close path method
+    # Mouth coord driven face
     ctx.move_to(61 - (mouth_x[5] * x_scale), 23 - (mouth_y[5] * y_scale))
     ctx.line_to(52 - (mouth_x[4] * x_scale), 26 - (mouth_y[4] * y_scale))
     ctx.line_to(49 - (mouth_x[3] * x_scale), 22 - (mouth_y[3] * y_scale))
@@ -390,10 +390,21 @@ with mp_face_mesh.FaceMesh(
     # making close path
     ctx.fill()
 
+
+                                      # Eye
+    ctx.move_to(1, 0)
+    ctx.line_to(26, 0)
+    ctx.line_to(30, 4)
+    ctx.line_to(26, 8)
+    ctx.line_to(20, 8)
+    ctx.line_to(1, 0)
+    ctx.fill()
     # getting fill extends
     buf = surface.get_data()
     array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
     array = array[:,:,:3]
+
+
     cv2.imshow("array", array)
     
     # printing message when file is saved
