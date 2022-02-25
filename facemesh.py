@@ -65,7 +65,7 @@ def calc_ref(x_coord, slope, offset):
 def NormalizeData(data):
   return (data - np.min(data)) / (np.max(data) - np.min(data))
 
-def coord_value(mplm):
+def coord_value(mplm):                        #Fucking Awful
   sub_landmarks = np.asarray(mplm)
   sub_landmarks = str(sub_landmarks)
   x = sub_landmarks.find("x:")
@@ -86,7 +86,7 @@ idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 #cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 width = 640
 height = 480
@@ -162,7 +162,7 @@ with mp_face_mesh.FaceMesh(
     '''
 
       
-    lm78 = coord_value(face_landmarks.landmark[78])
+    lm78 = coord_value(face_landmarks.landmark[78])                 #Fuck
     lm191 = coord_value(face_landmarks.landmark[191])
     lm80 = coord_value(face_landmarks.landmark[80])
     lm81 = coord_value(face_landmarks.landmark[81])
@@ -208,7 +208,7 @@ with mp_face_mesh.FaceMesh(
     center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
 
     try: 
-      if keyboard.is_pressed('1') or calibrated == False:         #####   REMOVE KEYBOARD CONDITION FOR RPI!!!!!!!!!!!!!!!!
+      if keyboard.is_pressed('1') or calibrated == False:         #   REMOVE KEYBOARD CONDITION FOR RPI!
         print("BrUh")
         idle_x[0] = lm78[0] - center_mouth[0]
         idle_y[0] = lm78[1] - center_mouth[1]
@@ -312,7 +312,7 @@ with mp_face_mesh.FaceMesh(
 
 
 
-              # Calculate EyeR Gaze coordinates (0.0 - 1.0)
+              # Calculate Eye Gaze coordinates (0.0 - 1.0)
               # x = 1.0 eye points towards face center
               # x = 0.0 eye points away face center
               # y = 1.0 eye points up
@@ -364,8 +364,8 @@ with mp_face_mesh.FaceMesh(
     ctx = cairo.Context (surface)
 
     # creating a cairo context object
-    x_scale = 2
-    y_scale = 0.4
+    x_scale = 3
+    y_scale = 0.5
 
     ctx = cairo.Context(surface)
     ctx.set_source_rgb(0, 0, 0)
@@ -375,7 +375,7 @@ with mp_face_mesh.FaceMesh(
                                       # RightFace
     ctx.set_source_rgb(1, 1, 1)
     # Mouth coord driven face
-    ctx.move_to(61 - (mouth_x[5] * x_scale), 23 - (mouth_y[5] * y_scale))
+    ctx.move_to(64, 23 - (mouth_y[5] * y_scale))
     ctx.line_to(52 - (mouth_x[4] * x_scale), 26 - (mouth_y[4] * y_scale))
     ctx.line_to(49 - (mouth_x[3] * x_scale), 22 - (mouth_y[3] * y_scale))
     ctx.line_to(42 - (mouth_x[2] * x_scale), 24 - (mouth_y[2] * y_scale))
@@ -385,7 +385,7 @@ with mp_face_mesh.FaceMesh(
     ctx.line_to(42 - (mouth_x[18] * x_scale), 25 - (mouth_y[18] * y_scale))
     ctx.line_to(48 - (mouth_x[17] * x_scale), 23 - (mouth_y[17] * y_scale))
     ctx.line_to(51 - (mouth_x[16] * x_scale), 27 - (mouth_y[16] * y_scale))
-    ctx.line_to(62 - (mouth_x[15] * x_scale), 24 - (mouth_y[15] * y_scale))
+    ctx.line_to(64, 24 - (mouth_y[15] * y_scale))
 
     # making close path
     ctx.fill()
@@ -397,7 +397,7 @@ with mp_face_mesh.FaceMesh(
     ctx.line_to(30, 4)
     ctx.line_to(26, 8)
     ctx.line_to(20, 8)
-    ctx.line_to(1, 0)
+    ctx.line_to(1, 2.5)
     ctx.fill()
     # getting fill extends
     buf = surface.get_data()
