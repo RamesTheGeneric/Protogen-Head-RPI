@@ -12,18 +12,12 @@ import math
 #import keyboard
 
 
-idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-calibrated = False
+
 
 matrix = None
 
-DISPLAY_WIDTH = 64     # L_DISPLAY 0-64, R_DISPLAY = 65-128
-DISPLAY_HEIGHT = 32
-IM_SCALE = 4
 
-color = (255, 0 , 0)
 
 def init():
   global matrix
@@ -107,7 +101,14 @@ class ThreadedCamera(object):
 '''	
 	  
   
-def render(face_landmarks, width, height):
+def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
+
+	DISPLAY_WIDTH = 64     # L_DISPLAY 0-64, R_DISPLAY = 65-128
+	DISPLAY_HEIGHT = 32
+	IM_SCALE = 4
+
+	color = (255, 0 , 0)
+
 	lm78 = coord_value(face_landmarks[78], width, height)					# fuck OWO
 	lm191 = coord_value(face_landmarks[191], width, height)
 	lm80 = coord_value(face_landmarks[80], width, height)
@@ -129,8 +130,8 @@ def render(face_landmarks, width, height):
 	lm88 = coord_value(face_landmarks[88], width, height)
 	lm95 = coord_value(face_landmarks[95], width, height)
 	
-	lm164 = coord_value(face_landmarks[164])   #First top point connecting to lips
-	lm18 = coord_value(face_landmarks[18])   #First bottom point connecitng to lips
+	lm164 = coord_value(face_landmarks[164], width, height)   #First top point connecting to lips
+	lm18 = coord_value(face_landmarks[18], width, height)   #First bottom point connecitng to lips
 	x1, y1 = lm164
 	x2, y2 = lm18
 	center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
@@ -275,12 +276,8 @@ def render(face_landmarks, width, height):
 	array = array[:,:,:3]
 	cv2.imshow('array', array)
 
-	
 	# printing message when file is saved
-
-
-
-													##  Draws Face Image from Mask
+	##  Draws Face Image from Mask
 
 	image = create_blank(DISPLAY_WIDTH, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
 	maskimage = array #Reads Mask image
@@ -297,6 +294,7 @@ def render(face_landmarks, width, height):
 	img_out.paste(im_pil, (0, 0)) #Write image on L_Display
 
 	#matrix.SetImage(img_out) #Display on matricies
+	return calibrated
 
 class ThreadedFace(object):
 	def __init__(self, width, height):
@@ -307,7 +305,7 @@ class ThreadedFace(object):
 		self.detect_faces = FaceDetection()
 		self.detect_face_landmarks = FaceLandmark()
 
-		self.cap = cv2.VideoCapture(1)
+		self.cap = cv2.VideoCapture(0)
 		self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 		
 		self.width = width
@@ -343,22 +341,30 @@ class ThreadedFace(object):
 	def get_landmarks(self):
 		return self.face_landmarks
 
+
 def main():  
 	init()
 	width = 640
 	height = 480
 
+	idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+
+
+
 	threaded_face = ThreadedFace(width, height)
+	calibrated = False
 	while True:
 		try:
 			face_landmarks = threaded_face.get_landmarks()
 			if len(face_landmarks) > 0:
-				render(face_landmarks, width, height)
+				calibrated = render(face_landmarks, width, height, idle_x, idle_y, calibrated)
 		except AttributeError:
 			pass
 
 
 
 
-if __name__ == '__main__':
-	main()
+# if __name__ == '__main__':
+main()
