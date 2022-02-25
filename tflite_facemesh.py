@@ -9,7 +9,7 @@ import rgbmatrix
 import os
 from threading import Thread
 import math
-import keyboard
+#import keyboard
 
 
 idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -135,7 +135,7 @@ def render(face_landmarks, width, height):
 	x2, y2 = lm18
 	center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
 	
-	if keyboard.is_pressed('1') or calibrated == False:         #   REMOVE KEYBOARD CONDITION FOR RPI!
+	if calibrated == False:         #   REMOVE KEYBOARD CONDITION FOR RPI!
 		print("BrUh")
 		idle_x[0] = lm78[0] - center_mouth[0]
 		idle_y[0] = lm78[1] - center_mouth[1]
@@ -352,7 +352,8 @@ def main():
 	while True:
 		try:
 			face_landmarks = threaded_face.get_landmarks()
-			render(face_landmarks, width, height)
+			if len(face_landmarks) > 0:
+				render(face_landmarks, width, height)
 		except AttributeError:
 			pass
 
