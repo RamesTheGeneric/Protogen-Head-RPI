@@ -1,5 +1,5 @@
 from fdlite import FaceDetection, FaceLandmark, face_detection_to_roi
-from fdlite.render import Colors, landmarks_to_render_data, render_to_image
+#from fdlite.render import Colors, landmarks_to_render_data, render_to_image
 from PIL import Image, ImageOps
 import PIL
 import cv2
@@ -21,7 +21,6 @@ matrix = None
 
 def init():
   global matrix
-  isolcpus=3
   options = rgbmatrix.RGBMatrixOptions()
   options.rows = 32
   options.cols = 64
@@ -30,6 +29,7 @@ def init():
   options.gpio_slowdown = 2
   options.hardware_mapping = 'adafruit-hat'
   matrix = rgbmatrix.RGBMatrix(options=options)
+
 
 def create_blank(width, height, rgb_color=(0, 0, 0)):
     image = np.zeros((height, width, 3), np.uint8)
@@ -68,46 +68,15 @@ def calc_ref(x_coord, slope, offset):
 def NormalizeData(data):
   return (data - np.min(data)) / (np.max(data) - np.min(data))
   
-'''
-class ThreadedCamera(object):
-    def __init__(self, src=0):
-        self.capture = cv2.VideoCapture(src)
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 3)
-        # Start frame retrieval thread
-        self.thread = Thread(target=self.update, args=())
-        self.thread.daemon = True
-        self.thread.start()
-
-    def update(self, img):
-		face_detections = detect_faces(img)
-		if len(face_detections):
-			# get ROI for the first face found
-			face_roi = face_detection_to_roi(face_detections[0], img.size)
-			# detect face landmarks
-			face_landmarks = detect_face_landmarks(img, face_roi)
-			# convert detections to render data
-			render_data = landmarks_to_render_data(face_landmarks, [], landmark_color=Colors.PINK, thickness=3)
-			# render and display landmarks (points only)
-				# Mouth Outer
-       
-
-    def show_frame(self):
-        img = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
-        img = cv2.resize(img, dsize=(config.X_RES, config.Y_RES))
-        // DO YOUR PREDICTION HERE
-        cv2.imshow('frame', img)
-        cv2.waitKey(1)
-  
-'''	
-	  
-  
 def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 
 	DISPLAY_WIDTH = 64     # L_DISPLAY 0-64, R_DISPLAY = 65-128
 	DISPLAY_HEIGHT = 32
 	IM_SCALE = 4
 
-	color = (255, 0 , 0)
+	brightness = 0.8
+
+	color = (255 * brightness, 0 * brightness , 0 * brightness)
 
 	lm78 = coord_value(face_landmarks[78], width, height)					# fuck OWO
 	lm191 = coord_value(face_landmarks[191], width, height)
@@ -184,6 +153,11 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	else:
 		pass
 			
+	'''
+      191 80  81  82  13  312 311 310 415
+    78                                   308
+      95  88  178 87  14  317 402 318 324
+    '''
 	mouth_x = [
 		idle_x[0] - (lm78[0] - center_mouth[0]), 
 		idle_x[1] - (lm191[0] - center_mouth[0]), 
@@ -235,8 +209,8 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	ctx = cairo.Context (surface)
 
 	# creating a cairo context object
-	x_scale = 2
-	y_scale = .8
+	x_scale = 3
+	y_scale = 1.3
 
 	ctx = cairo.Context(surface)
 	ctx.set_source_rgb(0, 0, 0)
@@ -257,7 +231,7 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	ctx.line_to(48 - (mouth_x[17] * x_scale), 23 - (mouth_y[17] * y_scale))
 	ctx.line_to(51 - (mouth_x[16] * x_scale), 27 - (mouth_y[16] * y_scale))
 	ctx.line_to(64, 24 - (mouth_y[15] * y_scale))
-	print(mouth_y)
+	# print(mouth_y)
 	# making close path
 	ctx.fill()
 
@@ -274,7 +248,7 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	buf = surface.get_data()
 	array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
 	array = array[:,:,:3]
-	cv2.imshow('array', array)
+	# cv2.imshow('array', array)
 
 	# printing message when file is saved
 	##  Draws Face Image from Mask
@@ -284,7 +258,7 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	ret, maskimage = cv2.threshold(maskimage, 50, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
 	res = cv2.bitwise_and(image, maskimage)  #Mask the base image
 	up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
-	cv2.imshow('up_res', up_res)  #Display Image
+	# cv2.imshow('up_res', up_res)  #Display Image
 
 
 	#Convert the image from CV2 to PIL
@@ -293,7 +267,9 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
 	img_out.paste(im_pil, (0, 0)) #Write image on L_Display
 
-	#matrix.SetImage(img_out) #Display on matricies
+	# cv2.waitKey(1)
+
+	matrix.SetImage(img_out) #Display on matricies
 	return calibrated
 
 class ThreadedFace(object):
@@ -305,7 +281,7 @@ class ThreadedFace(object):
 		self.detect_faces = FaceDetection()
 		self.detect_face_landmarks = FaceLandmark()
 
-		self.cap = cv2.VideoCapture(0)
+		self.cap = cv2.VideoCapture('/dev/video0')
 		self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 		
 		self.width = width
@@ -336,16 +312,17 @@ class ThreadedFace(object):
 				self.face_landmarks = self.detect_face_landmarks(img, face_roi)
 			else:
 				print('no face detected :(') 
+		print('Done')
 
 
 	def get_landmarks(self):
 		return self.face_landmarks
 
 
-def main():  
+def main():
 	init()
-	width = 640
-	height = 480
+	width = 320
+	height = 240
 
 	idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -355,6 +332,7 @@ def main():
 
 	threaded_face = ThreadedFace(width, height)
 	calibrated = False
+
 	while True:
 		try:
 			face_landmarks = threaded_face.get_landmarks()
@@ -366,5 +344,10 @@ def main():
 
 
 
-# if __name__ == '__main__':
-main()
+if __name__ == '__main__':
+	main()
+
+
+#sync in /mnt/x/Documents/GitHub/Protogen-Head-RPI: rsync -rP ./*.py pi@192.168.1.130:~/pc_sync
+#powershell ssh: ssh pi@192.168.1.130
+
