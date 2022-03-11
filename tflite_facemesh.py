@@ -9,9 +9,61 @@ import rgbmatrix
 import os
 from threading import Thread
 import math
-import helpers.defines as defines
-from helpers.constants import process_landmarks
+import defines
+#from constants import process_landmarks, idle_x, idle_y
+import constants
 #import keyboard
+
+def create_blank(width, height, rgb_color=(0, 0, 0)):
+    image = np.zeros((height, width, 3), np.uint8)
+    color = tuple(reversed(rgb_color))
+    image[:] = color
+
+    return image
+
+
+
+
+def coord_value(mplm, width, height):
+  sub_landmarks = str(mplm)
+  #sub_landmarks = str(sub_landmarks)
+  x = sub_landmarks.find("x=")
+  s = sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7]
+  s = s.replace(',', '')
+  x = float(s)
+  x = int(x * width)
+  y = sub_landmarks.find("y=")
+  s = sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7]
+  s = s.replace(',', '')
+  y = float(s)
+  y = int(y * height)
+  return [x, y]
+  
+def average(lst):
+  return sum(lst) / len(lst)
+
+def dist(x2, x1, y2, y1):
+  return math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))
+  
+def calc_ref(x_coord, slope, offset):
+  return (-slope * x_coord) + offset
+
+def NormalizeData(data):
+  return (data - np.min(data)) / (np.max(data) - np.min(data))
+
+def init():
+  
+  global matrix
+  options = rgbmatrix.RGBMatrixOptions()
+  options.rows = 32
+  options.cols = 64
+  options.chain_length = 2
+  options.parallel = 1
+  options.gpio_slowdown = 2
+  options.hardware_mapping = 'adafruit-hat'
+  matrix = rgbmatrix.RGBMatrix(options=options)
+
+  
 matrix = None
 
 def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
@@ -24,9 +76,8 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 
 	color = (255 * brightness, 0 * brightness , 0 * brightness)
 	button = 0
-	mouth_x, mouth_y, eye_r_x, eye_r_y = process_landmarks(face_landmarks, width, height, button, calibrated)
-																			#FaceCoords
-
+	mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated= constants.process_landmarks(face_landmarks, width, height, button, calibrated)
+																#FaceCoords
 	w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
 	surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
 	ctx = cairo.Context (surface)
@@ -146,12 +197,14 @@ class ThreadedFace(object):
 
 
 def main():
-	defines.init()
+	init()
 	width = 320
 	height = 240
 
+	
 	idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	
 
 
 
@@ -165,6 +218,7 @@ def main():
 			if len(face_landmarks) > 0:
 				calibrated = render(face_landmarks, width, height, idle_x, idle_y, calibrated)
 		except AttributeError:
+			print("failed to render")
 			pass
 
 
