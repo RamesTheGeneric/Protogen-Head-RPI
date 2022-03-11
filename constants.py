@@ -246,4 +246,4 @@ def process_landmarks(face_landmarks, width, height, button, calibrated):
 		idle_y[34] - (lm110[1] - center_eye_r[1]),
 		idle_y[35] - (lm25[1] - center_eye_r[1])
 	]
-	return mouth_x, mouth_y, eye_r_x, eye_r_y
+	return mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated
