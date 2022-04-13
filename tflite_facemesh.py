@@ -75,9 +75,139 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	brightness = 0.8
 
 	color = (255 * brightness, 0 * brightness , 0 * brightness)
+<<<<<<< HEAD
 	button = 0
 	mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated= constants.process_landmarks(face_landmarks, width, height, button, calibrated)
 																#FaceCoords
+=======
+
+	lm78 = coord_value(face_landmarks[78], width, height)					# fuck OWO
+	lm191 = coord_value(face_landmarks[191], width, height)
+	lm80 = coord_value(face_landmarks[80], width, height)
+	lm81 = coord_value(face_landmarks[81], width, height)
+	lm82 = coord_value(face_landmarks[82], width, height)
+	lm13 = coord_value(face_landmarks[13], width, height)
+	lm312 = coord_value(face_landmarks[312], width, height)
+	lm311 = coord_value(face_landmarks[311], width, height)
+	lm310 = coord_value(face_landmarks[310], width, height)
+	lm415 = coord_value(face_landmarks[415], width, height)
+	lm308 = coord_value(face_landmarks[308], width, height)
+	lm324 = coord_value(face_landmarks[324], width, height)
+	lm318 = coord_value(face_landmarks[318], width, height)
+	lm402 = coord_value(face_landmarks[402], width, height)
+	lm317 = coord_value(face_landmarks[317], width, height)
+	lm14 = coord_value(face_landmarks[14], width, height)
+	lm87 = coord_value(face_landmarks[87], width, height)
+	lm178 = coord_value(face_landmarks[178], width, height)
+	lm88 = coord_value(face_landmarks[88], width, height)
+	lm95 = coord_value(face_landmarks[95], width, height)
+	
+	lm164 = coord_value(face_landmarks[164], width, height)   #First top point connecting to lips
+	lm18 = coord_value(face_landmarks[18], width, height)   #First bottom point connecitng to lips
+	x1, y1 = lm164
+	x2, y2 = lm18
+	center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
+	
+	if calibrated == False:         #   REMOVE KEYBOARD CONDITION FOR RPI!
+		print("BrUh")
+		idle_x[0] = lm78[0] - center_mouth[0]
+		idle_y[0] = lm78[1] - center_mouth[1]
+		idle_x[1] = lm191[0] - center_mouth[0]
+		idle_y[1] = lm191[1] - center_mouth[1]
+		idle_x[2] = lm80[0] - center_mouth[0]
+		idle_y[2] = lm80[1] - center_mouth[1]
+		idle_x[3] = lm81[0] - center_mouth[0]
+		idle_y[3] = lm81[1] - center_mouth[1]
+		idle_x[4] = lm82[0] - center_mouth[0]
+		idle_y[4] = lm82[1] - center_mouth[1]
+		idle_x[5] = lm13[0] - center_mouth[0]
+		idle_y[5] = lm13[1] - center_mouth[1]
+		idle_x[6] = lm312[0] - center_mouth[0]
+		idle_y[6] = lm312[1] - center_mouth[1]
+		idle_x[7] = lm311[0] - center_mouth[0]
+		idle_y[7] = lm311[1] - center_mouth[1]
+		idle_x[8] = lm310[0] - center_mouth[0]
+		idle_y[8] = lm310[1] - center_mouth[1]
+		idle_x[9] = lm415[0] - center_mouth[0]
+		idle_y[9] = lm415[1] - center_mouth[1]
+		idle_x[10] = lm308[0] - center_mouth[0]
+		idle_y[10] = lm308[1] - center_mouth[1]
+		idle_x[11] = lm324[0] - center_mouth[0]
+		idle_y[11] = lm324[1] - center_mouth[1]
+		idle_x[12] = lm318[0] - center_mouth[0]
+		idle_y[12] = lm318[1] - center_mouth[1]
+		idle_x[13] = lm402[0] - center_mouth[0]
+		idle_y[13] = lm402[1] - center_mouth[1]
+		idle_x[14] = lm317[0] - center_mouth[0]
+		idle_y[14] = lm317[1] - center_mouth[1]
+		idle_x[15] = lm14[0] - center_mouth[0]
+		idle_y[15] = lm14[1] - center_mouth[1]
+		idle_x[16] = lm87[0] - center_mouth[0]
+		idle_y[16] = lm87[1] - center_mouth[1]
+		idle_x[17] = lm178[0] - center_mouth[0]
+		idle_y[17] = lm178[1] - center_mouth[1]
+		idle_x[18] = lm88[0] - center_mouth[0]
+		idle_y[18] = lm88[1] - center_mouth[1]
+		idle_x[19] = lm95[0] - center_mouth[0]
+		idle_y[19] = lm95[1] - center_mouth[1]
+		calibrated = True
+		print("calib: " + str(idle_x))
+		
+	else:
+		pass
+			
+	'''
+      191 80  81  82  13  312 311 310 415
+    78                                   308
+      95  88  178 87  14  317 402 318 324
+    '''
+	mouth_x = [
+		idle_x[0] - (lm78[0] - center_mouth[0]), 
+		idle_x[1] - (lm191[0] - center_mouth[0]), 
+		idle_x[2] - (lm80[0] - center_mouth[0]), 
+		idle_x[3] - (lm81[0] - center_mouth[0]), 
+		idle_x[4] - (lm82[0] - center_mouth[0]), 
+		idle_x[5] - (lm13[0] - center_mouth[0]), 
+		idle_x[6] - (lm312[0] - center_mouth[0]), 
+		idle_x[7] - (lm311[0] - center_mouth[0]), 
+		idle_x[8] - (lm310[0] - center_mouth[0]), 
+		idle_x[9] - (lm415[0] - center_mouth[0]), 
+		idle_x[10] - (lm308[0] - center_mouth[0]), 
+		idle_x[11] - (lm324[0] - center_mouth[0]), 
+		idle_x[12] - (lm318[0] - center_mouth[0]),
+		idle_x[13] - (lm402[0] - center_mouth[0]),
+		idle_x[14] - (lm317[0] - center_mouth[0]),
+		idle_x[15] - (lm14[0] - center_mouth[0]),
+		idle_x[16] - (lm87[0] - center_mouth[0]),
+		idle_x[17] - (lm178[0] - center_mouth[0]),
+		idle_x[18] - (lm88[0] - center_mouth[0]),
+		idle_x[19] - (lm95[0] - center_mouth[0])
+	]
+
+	mouth_y = [
+		idle_y[0] - (lm78[1] - center_mouth[1]), 
+		idle_y[1] - (lm191[1] - center_mouth[1]), 
+		idle_y[2] - (lm80[1] - center_mouth[1]), 
+		idle_y[3] - (lm81[1] - center_mouth[1]), 
+		idle_y[4] - (lm82[1] - center_mouth[1]), 
+		idle_y[5] - (lm13[1] - center_mouth[1]), 
+		idle_y[6] - (lm312[1] - center_mouth[1]), 
+		idle_y[7] - (lm311[1] - center_mouth[1]), 
+		idle_y[8] - (lm310[1] - center_mouth[1]), 
+		idle_y[9] - (lm415[1] - center_mouth[1]), 
+		idle_y[10] - (lm308[1] - center_mouth[1]), 
+		idle_y[11] - (lm324[1] - center_mouth[1]), 
+		idle_y[12] - (lm318[1] - center_mouth[1]),
+		idle_y[13] - (lm402[1] - center_mouth[1]),
+		idle_y[14] - (lm317[1] - center_mouth[1]),
+		idle_y[15] - (lm14[1] - center_mouth[1]),
+		idle_y[16] - (lm87[1] - center_mouth[1]),
+		idle_y[17] - (lm178[1] - center_mouth[1]),
+		idle_y[18] - (lm88[1] - center_mouth[1]),
+		idle_y[19] - (lm95[1] - center_mouth[1])
+	]
+	
+>>>>>>> parent of bcf103d (Added Eyebrows)
 	w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
 	surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
 	ctx = cairo.Context (surface)
@@ -105,9 +235,11 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	ctx.line_to(48 - (mouth_x[17] * x_scale), 23 - (mouth_y[17] * y_scale))
 	ctx.line_to(51 - (mouth_x[16] * x_scale), 27 - (mouth_y[16] * y_scale))
 	ctx.line_to(64, 24 - (mouth_y[15] * y_scale))
+	# print(mouth_y)
 	# making close path
 	ctx.fill()
 									# Eye
+<<<<<<< HEAD
 	x_scale = 3
 	y_scale = 1.5
 	ctx.move_to(19.4, 3.5 - (eye_r_y[0] * y_scale))
@@ -123,6 +255,15 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 	ctx.line_to(18.1, 7.8)
 	ctx.fill()
 
+=======
+	ctx.move_to(1, 0)
+	ctx.line_to(26, 0)
+	ctx.line_to(30, 4)
+	ctx.line_to(26, 8)
+	ctx.line_to(20, 8)
+	ctx.line_to(1, 0)
+	ctx.fill()
+>>>>>>> parent of bcf103d (Added Eyebrows)
 	# getting fill extends
 	buf = surface.get_data()
 	array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
@@ -153,13 +294,15 @@ def render(face_landmarks, width, height, idle_x, idle_y, calibrated):
 
 class ThreadedFace(object):
 	def __init__(self, width, height):
+		# load detection models
+		# open image; by default, the "front camera"-model is used, which is smaller
+		# and ideal for selfies, and close-up portraits
+
 		self.detect_faces = FaceDetection()
 		self.detect_face_landmarks = FaceLandmark()
 
 		self.cap = cv2.VideoCapture('/dev/video0')
-		#self.cap = cv2.VideoCapture('/base/soc.i2c0mux/i2c@1/ov5647@36', cv2.CAP_V4L) gst-launch-1.0
-		#self.cap = cv2.VideoCapture('libcamerasrc ! video/x-raw, width=320, height=240, framerate=30/1 ! videoconvert ! videoscale ! autovideosink', cv2.CAP_GSTREAMER)
-		#self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+		self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 		
 		self.width = width
 		self.height = height
@@ -201,10 +344,15 @@ def main():
 	width = 320
 	height = 240
 
+<<<<<<< HEAD
 	
 	idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	
+=======
+	idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+>>>>>>> parent of bcf103d (Added Eyebrows)
 
 
 
