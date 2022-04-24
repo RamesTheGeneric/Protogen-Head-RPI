@@ -21,13 +21,15 @@ math
 constants
 face
 
-##How it works: 
+How it works: 
 
 The sbc takes the camera feed and processes the frames with mediapipe facemesh to return landmarks. The user presses a button to "reset" the "reference coordinates" which are then used to calculate landmark offsets as a normalized value to the video frame. In another thread, The different faces are drawn based on the button input. Each face is defined as a vector graphic being drawn with cario. The anchors are then manually assigend to different offsets from the landmark detector and that moves the anchors to move the mouth and eyes to the user's face. 
 
-##Current state:
+Current state:
 
-Renders the Idle face just fine with offsets. Landmark detector runs at ~19fps at 320x240 it's acceptable but could be better. 
+~~Renders the Idle face just fine with offsets. Landmark detector runs at ~19fps at 320x240 it's acceptable but could be better. ~~
+
+Mediapipe doesn't track well with the face this close to the camera. Dlib fairs about the same but is much faster. I need to train a new dlib model with a dataset from the helmet cam. 
 
 
 
