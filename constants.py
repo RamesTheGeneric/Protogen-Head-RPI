@@ -1,80 +1,107 @@
-import defines
+def coord_value(mplm, width, height):
+  sub_landmarks = str(mplm)
+  #sub_landmarks = str(sub_landmarks)
+  x = sub_landmarks.find("x=")
+  s = sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7]
+  s = s.replace(',', '')
+  x = float(s)
+  x = int(x * width)
+  y = sub_landmarks.find("y=")
+  s = sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7]
+  s = s.replace(',', '')
+  y = float(s)
+  y = int(y * height)
+  return [x, y]
+  
+def average(lst):
+  return sum(lst) / len(lst)
+
+def dist(x2, x1, y2, y1):
+  return math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))
+  
+def calc_ref(x_coord, slope, offset):
+  return (-slope * x_coord) + offset
+
+def NormalizeData(data):
+  return (data - np.min(data)) / (np.max(data) - np.min(data))
 
 idle_x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 idle_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-def process_landmarks(face_landmarks, width, height, button, calibrated):
-	lm78 = defines.coord_value(face_landmarks[78], width, height)					# fuck OWO
-	lm191 = defines.coord_value(face_landmarks[191], width, height)
-	lm80 = defines.coord_value(face_landmarks[80], width, height)
-	lm81 = defines.coord_value(face_landmarks[81], width, height)
-	lm82 = defines.coord_value(face_landmarks[82], width, height)
-	lm13 = defines.coord_value(face_landmarks[13], width, height)
-	lm312 = defines.coord_value(face_landmarks[312], width, height)
-	lm311 = defines.coord_value(face_landmarks[311], width, height)
-	lm310 = defines.coord_value(face_landmarks[310], width, height)
-	lm415 = defines.coord_value(face_landmarks[415], width, height)
-	lm308 = defines.coord_value(face_landmarks[308], width, height)
-	lm324 = defines.coord_value(face_landmarks[324], width, height)
-	lm318 = defines.coord_value(face_landmarks[318], width, height)
-	lm402 = defines.coord_value(face_landmarks[402], width, height)
-	lm317 = defines.coord_value(face_landmarks[317], width, height)
-	lm14 = defines.coord_value(face_landmarks[14], width, height)
-	lm87 = defines.coord_value(face_landmarks[87], width, height)
-	lm178 = defines.coord_value(face_landmarks[178], width, height)
-	lm88 = defines.coord_value(face_landmarks[88], width, height)
-	lm95 = defines.coord_value(face_landmarks[95], width, height)
+def process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calibrated):
+	lm78 = coord_value(face_landmarks[78], width, height)					# fuck OWO
+	lm191 = coord_value(face_landmarks[191], width, height)
+	lm80 = coord_value(face_landmarks[80], width, height)
+	lm81 = coord_value(face_landmarks[81], width, height) 
+	lm82 = coord_value(face_landmarks[82], width, height)
+	lm13 = coord_value(face_landmarks[13], width, height)
+	lm312 = coord_value(face_landmarks[312], width, height)
+	lm311 = coord_value(face_landmarks[311], width, height)
+	lm310 = coord_value(face_landmarks[310], width, height)
+	lm415 = coord_value(face_landmarks[415], width, height)
+	lm308 = coord_value(face_landmarks[308], width, height)
+	lm324 = coord_value(face_landmarks[324], width, height)
+	lm318 = coord_value(face_landmarks[318], width, height)
+	lm402 = coord_value(face_landmarks[402], width, height)
+	lm317 = coord_value(face_landmarks[317], width, height)
+	lm14 = coord_value(face_landmarks[14], width, height)
+	lm87 = coord_value(face_landmarks[87], width, height)
+	lm178 = coord_value(face_landmarks[178], width, height)
+	lm88 = coord_value(face_landmarks[88], width, height)
+	lm95 = coord_value(face_landmarks[95], width, height)
 															#Right Eye
-	lm130 = defines.coord_value(face_landmarks[107], width, height)
-	lm247 = defines.coord_value(face_landmarks[66], width, height)
-	lm30 = defines.coord_value(face_landmarks[105], width, height)
-	lm29 = defines.coord_value(face_landmarks[63], width, height)
-	lm27 = defines.coord_value(face_landmarks[70], width, height)
-	lm28 = defines.coord_value(face_landmarks[28], width, height)
-	lm56 = defines.coord_value(face_landmarks[56], width, height)
-	lm190 = defines.coord_value(face_landmarks[190], width, height)
-	lm243 = defines.coord_value(face_landmarks[243], width, height)
-	lm112 = defines.coord_value(face_landmarks[112], width, height)
-	lm26 = defines.coord_value(face_landmarks[26], width, height)
-	lm22 = defines.coord_value(face_landmarks[22], width, height)
-	lm23 = defines.coord_value(face_landmarks[23], width, height)
-	lm24 = defines.coord_value(face_landmarks[24], width, height)
-	lm110 = defines.coord_value(face_landmarks[110], width, height)
-	lm25 = defines.coord_value(face_landmarks[25], width, height)
+	lm130 = coord_value(face_landmarks[107], width, height)
+	lm247 = coord_value(face_landmarks[66], width, height)
+	lm30 = coord_value(face_landmarks[105], width, height)
+	lm29 = coord_value(face_landmarks[63], width, height)
+	lm27 = coord_value(face_landmarks[70], width, height)
+	lm28 = coord_value(face_landmarks[28], width, height)
+	lm56 = coord_value(face_landmarks[56], width, height)
+	lm190 = coord_value(face_landmarks[190], width, height)
+	lm243 = coord_value(face_landmarks[243], width, height)
+	lm112 = coord_value(face_landmarks[112], width, height)
+	lm26 = coord_value(face_landmarks[26], width, height)
+	lm22 = coord_value(face_landmarks[22], width, height)
+	lm23 = coord_value(face_landmarks[23], width, height)
+	lm24 = coord_value(face_landmarks[24], width, height)
+	lm110 = coord_value(face_landmarks[110], width, height)
+	lm25 = coord_value(face_landmarks[25], width, height)
 															#Right Eye Center
-	lm33 = defines.coord_value(face_landmarks[33], width, height)   #Outer Corner of Eye
-	lm133 = defines.coord_value(face_landmarks[133], width, height)   #Center Corner of eye
+	lm33 = coord_value(face_landmarks[33], width, height)   #Outer Corner of Eye
+	lm133 = coord_value(face_landmarks[133], width, height)   #Center Corner of eye
 	x1, y1 = lm33
 	x2, y2 = lm133
-	center_eye_r = [int(defines.average([x1, x2])), int(defines.average([y1, y2]))]
+	center_eye_r = [int(average([x1, x2])), int(average([y1, y2]))]
+
+	center_eye_l = [int(average([x1, x2])), int(average([y1, y2]))]
 															#Left Eye
-	lm359 = defines.coord_value(face_landmarks[130], width, height)
-	lm467 = defines.coord_value(face_landmarks[247], width, height)
-	lm260 = defines.coord_value(face_landmarks[30], width, height)
-	lm259 = defines.coord_value(face_landmarks[29], width, height)
-	lm257 = defines.coord_value(face_landmarks[27], width, height)
-	lm258 = defines.coord_value(face_landmarks[28], width, height)
-	lm286 = defines.coord_value(face_landmarks[56], width, height)
-	lm414 = defines.coord_value(face_landmarks[190], width, height)
-	lm463 = defines.coord_value(face_landmarks[243], width, height)
-	lm341 = defines.coord_value(face_landmarks[26], width, height)
-	lm256 = defines.coord_value(face_landmarks[22], width, height)
-	lm252 = defines.coord_value(face_landmarks[23], width, height)
-	lm253 = defines.coord_value(face_landmarks[24], width, height)
-	lm254 = defines.coord_value(face_landmarks[110], width, height)
-	lm339 = defines.coord_value(face_landmarks[25], width, height)
-	lm255 = defines.coord_value(face_landmarks[255], width, height)
+	lm359 = coord_value(face_landmarks[130], width, height)
+	lm467 = coord_value(face_landmarks[247], width, height)
+	lm260 = coord_value(face_landmarks[30], width, height)
+	lm259 = coord_value(face_landmarks[29], width, height)
+	lm257 = coord_value(face_landmarks[27], width, height)
+	lm258 = coord_value(face_landmarks[28], width, height)
+	lm286 = coord_value(face_landmarks[56], width, height)
+	lm414 = coord_value(face_landmarks[190], width, height)
+	lm463 = coord_value(face_landmarks[243], width, height)
+	lm341 = coord_value(face_landmarks[26], width, height)
+	lm256 = coord_value(face_landmarks[22], width, height)
+	lm252 = coord_value(face_landmarks[23], width, height)
+	lm253 = coord_value(face_landmarks[24], width, height)
+	lm254 = coord_value(face_landmarks[110], width, height)
+	lm339 = coord_value(face_landmarks[25], width, height)
+	lm255 = coord_value(face_landmarks[255], width, height)
 															#Left Eye Center
-	lm263 = defines.coord_value(face_landmarks[263], width, height)   #Outer Corner of Eye
-	lm362 = defines.coord_value(face_landmarks[362], width, height)   #Center Corner of eye
+	lm263 = coord_value(face_landmarks[263], width, height)   #Outer Corner of Eye
+	lm362 = coord_value(face_landmarks[362], width, height)   #Center Corner of eye
 	x1, y1 = lm263
 	x2, y2 = lm362
-	center_eye_l = [int(defines.average([x1, x2])), int(defines.average([y1, y2]))]
-	lm164 = defines.coord_value(face_landmarks[164], width, height)   #First top point connecting to lips
-	lm18 = defines.coord_value(face_landmarks[18], width, height)   #First bottom point connecitng to lips
+	center_eye_l = [int(average([x1, x2])), int(average([y1, y2]))]
+	lm164 = coord_value(face_landmarks[164], width, height)   #First top point connecting to lips
+	lm18 = coord_value(face_landmarks[18], width, height)   #First bottom point connecitng to lips
 	x1, y1 = lm164
 	x2, y2 = lm18
-	center_mouth = [int(defines.average([x1, x2])), int(defines.average([y1, y2]))]
+	center_mouth = [int(average([x1, x2])), int(average([y1, y2]))]
 	
 	if calibrated == False:         #   REMOVE KEYBOARD CONDITION FOR RPI!
 		print("BrUh")						#Mouth			(0-19)
@@ -246,4 +273,5 @@ def process_landmarks(face_landmarks, width, height, button, calibrated):
 		idle_y[34] - (lm110[1] - center_eye_r[1]),
 		idle_y[35] - (lm25[1] - center_eye_r[1])
 	]
+
 	return mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated
