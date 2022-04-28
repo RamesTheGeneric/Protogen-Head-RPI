@@ -33,7 +33,9 @@ Mediapipe doesn't track well with the face this close to the camera. Dlib fairs 
 
 
 
-To do: 
+~~To do:~~
+
+Rewrite everything for the new model
 
 * Finish drawing the other face
 * Add controller input (Wii remote for now)
