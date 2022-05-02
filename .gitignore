@@ -10,4 +10,7 @@ model/training_images TensorFlow/variables/variables.index
 model/training_images TensorFlow/variables/variables.data-00000-of-00001
 model/training_images TensorFlow/signature.json
 model/training_images TensorFlow/saved_model.pb
+Sockets Test/Dataset/
+Sockets Test/Test
 *.jpg
+Sockets Test/Dataset.7z

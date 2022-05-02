@@ -43,18 +43,19 @@ while True:
     print('GOT CONNECTION FROM:',addr)
     if client_socket:
         vid = cv2.VideoCapture(0)
-        detector = dlib.get_frontal_face_detector()
-        predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+        vid.set(cv2.CAP_PROP_FPS, 60)
+        #detector = dlib.get_frontal_face_detector()
+        #predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
         #vid = cv2.VideoCapture("E:\Videos\Love.And.Monsters.2020.720p.mp4")
         while(vid.isOpened()):
             img,frame = vid.read()
-            frame = imutils.resize(frame,width=640)
+            #frame = imutils.resize(frame,width=640)
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = detector(gray)
-            for face in faces:
-                print(face)
+            #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            #faces = detector(gray)
+            #for face in faces:
+            #    print(face)
             a = pickle.dumps(frame)
             message = struct.pack("Q",len(a))+a
             client_socket.sendall(message)
