@@ -36,7 +36,7 @@ while True:
     height = int(gray.shape[0] * scale_percent / 100)
     dim = (width, height)
     gray = cv2.resize(gray, dim, interpolation = cv2.INTER_AREA)
-
+    
     faces = detector(gray)
     for face in faces:
         x1 = face.left()
@@ -44,7 +44,6 @@ while True:
         x2 = face.right()
         y2 = face.bottom()
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
-
         landmarks = predictor(gray, face)
         lms = []
         for n in range(0, 12):

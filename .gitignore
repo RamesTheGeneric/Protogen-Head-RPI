@@ -12,5 +12,7 @@ model/training_images TensorFlow/signature.json
 model/training_images TensorFlow/saved_model.pb
 Sockets Test/Dataset/
 Sockets Test/Test
+old/Dataset
+old/Test
 *.jpg
 Sockets Test/Dataset.7z

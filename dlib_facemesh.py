@@ -8,6 +8,10 @@ from threading import Thread
 import math
 import constants_dlib
 import face_dlib
+import socket
+import pickle
+import struct
+
                                                             #Todo: Figure out what the fuck is going on with the face landmarks
                                                             #Todo: Make the face landmarks consistant by using a fixed box instead of object detector
 def create_blank(width, height, rgb_color=(0, 0, 0)):
@@ -77,8 +81,8 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
     ctx = cairo.Context (surface)
     # creating a cairo context object
-    x_scale = .25
-    y_scale = .25
+    x_scale = .5
+    y_scale = -.3
 
     ctx = cairo.Context(surface)
     ctx.set_source_rgb(0, 0, 0)
@@ -113,6 +117,9 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     #print("rendered")
     return calibrated, center_mouth, idle_x, idle_y
 
+
+
+
 class ThreadedFace(object):
     def __init__(self, width, height):
         #self.detect_faces = FaceDetection()
@@ -144,6 +151,7 @@ class ThreadedFace(object):
         self.thread = Thread(target=self.update, args=())
         self.thread.daemon = True
         self.thread.start()
+        
 
     def update(self):
         while self.cap.isOpened():
@@ -198,6 +206,7 @@ def main():
 
 
     threaded_face = ThreadedFace(width, height)
+
     calibrated = False
     center_mouth = 0
 

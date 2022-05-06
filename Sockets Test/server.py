@@ -4,6 +4,7 @@ import pickle
 import cv2
 import imutils
 import dlib
+from timeit import default_timer as timer
 
 '''
 HEADERSIZE = 10
@@ -25,7 +26,7 @@ while True:
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 host_name  = socket.gethostname()
 host_ip = socket.gethostbyname(host_name)
-host_ip = "192.168.1.187"
+host_ip = "192.168.137.219"
 print('HOST IP:',host_ip)
 port = 9999
 socket_address = (host_ip,port)
@@ -44,18 +45,72 @@ while True:
     if client_socket:
         vid = cv2.VideoCapture(0)
         vid.set(cv2.CAP_PROP_FPS, 60)
-        #detector = dlib.get_frontal_face_detector()
-        #predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+        vid.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+
+        detector = dlib.simple_object_detector("detector.svm")
+        predictor = dlib.shape_predictor("predictor.dat")
 
         #vid = cv2.VideoCapture("E:\Videos\Love.And.Monsters.2020.720p.mp4")
         while(vid.isOpened()):
             img,frame = vid.read()
             #frame = imutils.resize(frame,width=640)
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-            #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            #faces = detector(gray)
-            #for face in faces:
-            #    print(face)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = detector(gray)
+            
+            for face in faces:
+                print(face)
+                x1 = face.left()
+                y1 = face.top()
+                x2 = face.right()
+                y2 = face.bottom()
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                start = timer()
+                landmarks = predictor(gray, face)
+                end = timer()
+                print(end - start)
+                lms = []
+                
+                for n in range(0, 12):
+                    x = landmarks.part(n).x
+                    y = landmarks.part(n).y
+                    lm = (x, y)
+                    lms.append(lm)
+                    print("x: " + str(x) + "y: " + str(y))
+                    if not n == 0:
+                        color = 255 / n 
+                    else: 
+                        color = 0
+                    font = cv2.FONT_HERSHEY_SIMPLEX
+  
+                    # org
+                    org = (x, y)
+                    
+                    # fontScale
+                    fontScale = .3
+                    
+                    # Blue color in BGR
+                    color = (255, 0, 0)
+                    
+                    # Line thickness of 2 px
+                    thickness = 1
+                    
+                    # Using cv2.putText() method
+                    cv2.putText(frame, str(n), org, font, 
+                                    fontScale, color, thickness, cv2.LINE_AA)
+
+                    #cv2.circle(frame, (x, y), 4, (int(color), 0, 0), -1)
+                print(lms)
+                
+
+            #debug shit
+
+
+
+
+
+
             a = pickle.dumps(frame)
             message = struct.pack("Q",len(a))+a
             client_socket.sendall(message)
