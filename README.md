@@ -4,9 +4,14 @@ Software for RPI based Protogen Heads
 Made for 64x32x2 matricies
 Tested on RPI 4 4GB
 
-Runs TFLite Implementation of Mediapipe. 
 
-tflite_facemesh.py is the Main file for now. I'm still messing around. 
+
+=======
+~~Runs TFLite Implementation of Mediapipe. ~~
+Runs custom Dlib shape predictor. 
+
+
+dlib_facemesh.py is the Main file for now. I'm still messing around. 
 
 Required Packages: 
 
@@ -20,6 +25,7 @@ threading
 math
 constants
 face
+dlib
 
 How it works: 
 

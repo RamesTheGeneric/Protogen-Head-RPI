@@ -17,7 +17,7 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
     return image
 
 # For static images:
-IMAGE_FILES = ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png']
+IMAGE_FILES = ["mp.png"]
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 with mp_face_mesh.FaceMesh(
     static_image_mode=True,
@@ -27,7 +27,7 @@ with mp_face_mesh.FaceMesh(
   for idx, file in enumerate(IMAGE_FILES):
     image = cv2.imread(file)
     # Convert the BGR image to RGB before processing.
-    results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
 
     # Print and draw face mesh landmarks on the image.
     if not results.multi_face_landmarks:
@@ -36,7 +36,8 @@ with mp_face_mesh.FaceMesh(
     width = 640
     height = 480
     color = (0, 0, 0)
-    annotated_image = create_blank(width, height, rgb_color = color) #Makes blank bg image
+    #annotated_image = create_blank(width, height, rgb_color = color) #Makes blank bg image
+    annotated_image = image
     for face_landmarks in results.multi_face_landmarks:
       print('face_landmarks:', face_landmarks)
       '''
