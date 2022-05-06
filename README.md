@@ -6,8 +6,9 @@ Tested on RPI 4 4GB
 
 
 
-=======
+
 ~~Runs TFLite Implementation of Mediapipe. ~~
+
 Runs custom Dlib shape predictor. 
 
 
@@ -33,15 +34,13 @@ The sbc takes the camera feed and processes the frames with mediapipe facemesh t
 
 Current state:
 
-~~Renders the Idle face just fine with offsets. Landmark detector runs at ~19fps at 320x240 it's acceptable but could be better. ~~
-
-Mediapipe doesn't track well with the face this close to the camera. Dlib fairs about the same but is much faster. I need to train a new dlib model with a dataset from the helmet cam. 
+New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filtering but it looks really promising.
 
 
 
 ~~To do:~~
 
-Rewrite everything for the new model
+Add filtering to the landmarks
 
 * Finish drawing the other face
 * Add controller input (Wii remote for now)
