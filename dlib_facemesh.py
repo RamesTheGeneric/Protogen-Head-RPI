@@ -1,6 +1,7 @@
 import dlib
 from PIL import Image, ImageOps
 import cv2
+from matplotlib import image
 import numpy as np
 import cairo
 import rgbmatrix
@@ -9,8 +10,6 @@ import math
 import constants_dlib
 import face_dlib
 import socket
-import pickle
-import struct
 
                                                             #Todo: Figure out what the fuck is going on with the face landmarks
                                                             #Todo: Make the face landmarks consistant by using a fixed box instead of object detector
@@ -18,35 +17,21 @@ def create_blank(width, height, rgb_color=(0, 0, 0)):
     image = np.zeros((height, width, 3), np.uint8)
     color = tuple(reversed(rgb_color))
     image[:] = color
-
     return image
 
+def load_bg_image(width, height, path):
 
+    image = cv2.imread(path)
+    image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return image
 
-
-def coord_value(mplm, width, height):
-  sub_landmarks = str(mplm)
-  #sub_landmarks = str(sub_landmarks)
-  x = sub_landmarks.find("x=")
-  s = sub_landmarks[x+3] + sub_landmarks[x+4] + sub_landmarks[x+5] + sub_landmarks[x+6] + sub_landmarks[x+7]
-  s = s.replace(',', '')
-  x = float(s)
-  x = int(x * width)
-  y = sub_landmarks.find("y=")
-  s = sub_landmarks[y+3] + sub_landmarks[y+4] + sub_landmarks[y+5] + sub_landmarks[y+6] + sub_landmarks[y+7]
-  s = s.replace(',', '')
-  y = float(s)
-  y = int(y * height)
-  return [x, y]
   
 def average(lst):
   return sum(lst) / len(lst)
 
 def dist(x2, x1, y2, y1):
   return math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))
-  
-def calc_ref(x_coord, slope, offset):
-  return (-slope * x_coord) + offset
 
 def NormalizeData(data):
   return (data - np.min(data)) / (np.max(data) - np.min(data))
@@ -63,6 +48,8 @@ def init():
   options.hardware_mapping = 'adafruit-hat'
   matrix = rgbmatrix.RGBMatrix(options=options)
 
+
+
   
 matrix = None
 
@@ -76,13 +63,11 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     color = (255 * brightness, 0 * brightness , 0 * brightness)
     button = [0]
     mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated, center_mouth, idle_x, idle_y = constants_dlib.process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calibrated, center_mouth, idle_x, idle_y)
-                                                                #FaceCoords
+                                                                                                 #FaceCoords
     w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
     ctx = cairo.Context (surface)
     # creating a cairo context object
-    x_scale = .5
-    y_scale = -.3
 
     ctx = cairo.Context(surface)
     ctx.set_source_rgb(0, 0, 0)
@@ -90,13 +75,13 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     ctx.fill()
     eye_l_y = "placeholder"
                                     # RightFace
-    buf = face_dlib.main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, x_scale, y_scale, button) 		#Face File
+    buf = face_dlib.main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button) 		#Face File
 
     array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
     array = array[:,:,:3]
 
-    ##  Draws Face Image from Mask
-
+    ##  Draws Face Image from generated face Mask
+    #image = load_bg_image(DISPLAY_WIDTH, DISPLAY_HEIGHT, 'faces/brown.png')
     image = create_blank(DISPLAY_WIDTH, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
     maskimage = array #Reads Mask image
     ret, maskimage = cv2.threshold(maskimage, 50, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
@@ -116,6 +101,26 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     matrix.SetImage(img_out) #Display on matricies
     #print("rendered")
     return calibrated, center_mouth, idle_x, idle_y
+'''
+class UdpServer():
+    def __init__(self):
+        self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.host_name = socket.gethostname()
+        self.host_ip = socket.gethostbyname(self.host_name)
+        print('HOST IP:',self.host_ip)
+        self.port(4269)
+        self.socket_address = (self.host_ip,self.port)
+        self.s.bind(self.socket_address)
+        self.s.listen(5)
+        print("LISTENING AT:",self.socket_address)
+        while True:
+            self.client_socket,self.addr = self.s.accept()
+            print('Got connection from:',self.addr)
+            if self.client_socket:
+                '''
+
+
+
 
 
 
@@ -187,32 +192,24 @@ class ThreadedFace(object):
         return self.face_landmarks, self.eye_r, self.eye_l
 
 
+
 def main():
+
+
     init()
     width = 320
     height = 240
     
-    
-
-
-#detector = dlib.get_frontal_face_detector()
-
-    
     idle_x = []
     idle_y = []
+
     
-
-
-
-
     threaded_face = ThreadedFace(width, height)
 
     calibrated = False
     center_mouth = 0
 
     while True:
-    
-
 
         try:
             face_landmarks, eye_r, eye_l = threaded_face.get_landmarks()
@@ -221,8 +218,6 @@ def main():
         except AttributeError:
             #print("failed to render")
             pass
-
-
 
 
 if __name__ == '__main__':
