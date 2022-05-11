@@ -7,41 +7,39 @@ Tested on RPI 4 4GB
 
 
 
-~~Runs TFLite Implementation of Mediapipe. ~~
+~~Runs TFLite Implementation of Mediapipe~~
 
 Runs custom Dlib shape predictor. 
 
 
 dlib_facemesh.py is the Main file for now. I'm still messing around. 
 
-Required Packages: 
 
-fdlite
-PIL
-cv2
-numpy
-cairo
-rgbmatrix
-threading
-math
-constants
-face
-dlib
+https://user-images.githubusercontent.com/53163624/167325850-92f9755d-7d87-4397-bf45-9e34f66615f9.mp4
 
-How it works: 
+
+
+## How it works: ##
 
 The sbc takes the camera feed and processes the frames with mediapipe facemesh to return landmarks. The user presses a button to "reset" the "reference coordinates" which are then used to calculate landmark offsets as a normalized value to the video frame. In another thread, The different faces are drawn based on the button input. Each face is defined as a vector graphic being drawn with cario. The anchors are then manually assigend to different offsets from the landmark detector and that moves the anchors to move the mouth and eyes to the user's face. 
 
-Current state:
+## Current state: ##
 
 New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filtering but it looks really promising.
 
+## Implemented Models: ##
+- [x] Dlib HOG Face Detector for full bounding box
+- [ ] Dlib HOG Face Detector for detecting mouth presence (To-do)
+- [x] Dlib Shape Predictor for Mouth Landmarks
 
 
-~~To do:~~
 
-Add filtering to the landmarks
 
+
+
+## To do: ##
+
+* Add filtering to the landmarks
 * Finish drawing the other face
 * Add controller input (Wii remote for now)
 * Make the background image a separate function
@@ -59,4 +57,7 @@ Add filtering to the landmarks
 
 
 Idk what else to put, I wrote this in like 2 minutes 
+
+## Contact ##
+
 Discord: Rames The Generic#3540
