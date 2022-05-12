@@ -37,12 +37,14 @@ New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filt
 
 
 
-## To do: ##
+## To do (By Priority): ##
 
+* UDP Button server/client
+* Finish drawing the other faces
+* Add Linear Transistion between faces
 * Add filtering to the landmarks
-* Finish drawing the other face
-* Add controller input (Wii remote for now)
-* Make the background image a separate function
+* Add controller input (cheapo vr controller for now)
+* Add Lucid Glove input (Custom lucid gloves in the shape of protogen claws)
 * Option to offload facemesh processing to another device (another SBC or an android phone)
 * I forgor the rest
 
