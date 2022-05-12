@@ -101,24 +101,27 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     matrix.SetImage(img_out) #Display on matricies
     #print("rendered")
     return calibrated, center_mouth, idle_x, idle_y
-'''
+
 class UdpServer():
     def __init__(self):
-        self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.host_name = socket.gethostname()
-        self.host_ip = socket.gethostbyname(self.host_name)
-        print('HOST IP:',self.host_ip)
-        self.port(4269)
-        self.socket_address = (self.host_ip,self.port)
-        self.s.bind(self.socket_address)
-        self.s.listen(5)
-        print("LISTENING AT:",self.socket_address)
-        while True:
-            self.client_socket,self.addr = self.s.accept()
-            print('Got connection from:',self.addr)
-            if self.client_socket:
-                '''
+        print('UDP Server Started!')
+        self.hostname = "192.168.137.219"            #           socket.gethostname()
+        self.ip = socket.gethostbyname(self.hostname)
+        self.port = 4269
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind((self.ip, self.port))
+        print(f'Start listening to {self.ip}:{self.port}')
+        self.thread = Thread(target=self.listen, args=())
+        self.thread.daemon = True
+        self.thread.start()
 
+    def listen(self):
+        while True:
+            self.data, self.addr = self.sock.recvfrom(1024)
+            print(f'got: {self.data} from: {self.addr}')
+
+    def get_data(self):
+        return self.data
 
 
 
@@ -127,6 +130,7 @@ class UdpServer():
 
 class ThreadedFace(object):
     def __init__(self, width, height):
+        print('Capture Started!')
         #self.detect_faces = FaceDetection()
 
         Face_detector_model = "models/detector.svm"
@@ -205,12 +209,17 @@ def main():
 
     
     threaded_face = ThreadedFace(width, height)
+    udp_server = UdpServer()
 
     calibrated = False
     center_mouth = 0
 
     while True:
-
+        try: 
+            data = udp_server.get_data
+            #print(str(data))
+        except:
+            print("UDP Thread Failed!")
         try:
             face_landmarks, eye_r, eye_l = threaded_face.get_landmarks()
             if len(face_landmarks) > 0:
