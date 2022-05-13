@@ -12,11 +12,13 @@ def process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calib
 	arrange = (0, 1, 4, 5 ,6, 7, 8, 9, 10 ,11, 2, 3)
 
 
-
-	for i in range (len(arrange)):
-		lm = face_landmarks[arrange[i]]
-		x.append(lm[0])
-		y.append(lm[1])
+	try:
+		for i in range (len(arrange)):
+			lm = face_landmarks[arrange[i]]
+			x.append(lm[0])
+			y.append(lm[1])
+	except:
+		print("X/Y Index out of range")
 
 	center_mouth = (average((x[3], x[9])), average((y[0], y[6])))
 	if calibrated == False:

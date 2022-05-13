@@ -12,10 +12,14 @@
 #       3: Puiple
 
 #   +++++Third+++++
+#       0: Right
+#       1: Left
+
+#   +++++Forth+++++
 #       0: X
 #       1: Y
 
-#   +++++Forth+++++
+#   +++++Fith+++++
 #       0 - 15: landmark
 
 
@@ -26,24 +30,32 @@ from timeit import default_timer as timer
 import ring
 storage = {}
 @ring.dict(storage, expire=1)       # Cache the loaded files into ram for the next call
-
-
 def read_face(filename):
 
     mydoc = minidom.parse(filename)
     features = []
     feature = mydoc.getElementsByTagName('polygon')
-    for i in range(len(feature)):
-        x = []
-        y = []
-        points = feature[i].attributes['points'].value
+    for i in range(1, (len(feature)), 2):
+        x_r = []
+        y_r = []
+        x_l = []
+        y_l = []
+        points = feature[i - 1].attributes['points'].value
         points = points.split()
-        for i in range(len(points)):
-            if (i % 2) == 0:
-                x.append(float(points[i]))
+        for n in range(len(points)):
+            if (n % 2) == 0:
+                x_r.append(float(points[n]))
             else:
-                y.append(float(points[i]))
-        features.append((x, y))
+                y_r.append(float(points[n]))
+        points = feature[(i)].attributes['points'].value
+        points = points.split()
+        for n in range(len(points)):
+            if (n % 2) == 0:
+                x_l.append(float(points[n]))
+            else:
+                y_l.append(float(points[n]))
+
+        features.append(((x_r, y_r), (x_l, y_l)))
     return features
 
 
@@ -54,7 +66,7 @@ def read_face(filename):
 #          =====Face List=====
 
 def load_faces():
-    idle = read_face('faces/idle.svg')
+    idle = read_face('faces/idle_m.svg')
     faces = (idle)
     return faces
 
@@ -75,7 +87,7 @@ class Idle():
         x_scale = .5
         y_scale = -.3
         #print(str(faces))
-        face = faces[0][0]
+        face = faces[0][0][0]   #   Idle, Mouth, Right
         ctx.move_to(face[0][0], face[1][0] - (mouth_y[3] * y_scale))
         ctx.line_to(face[0][1] - (mouth_x[3] * x_scale), face[1][1] - (mouth_y[3] * y_scale))
         ctx.line_to(face[0][2] - (mouth_x[2] * x_scale), face[1][2] - (mouth_y[2] * y_scale))
@@ -88,45 +100,92 @@ class Idle():
         ctx.line_to(face[0][9] - (mouth_x[9] * x_scale), face[1][9] - (mouth_y[9] * y_scale))
         ctx.line_to(face[0][10], face[1][10] - (mouth_y[9] * y_scale))
 
+        face = faces[0][0][1]   #   Idle, Mouth, Left
+        ctx.move_to(face[0][0], face[1][0] - (mouth_y[3] * y_scale))
+        ctx.line_to(face[0][1] - (mouth_x[3] * x_scale), face[1][1] - (mouth_y[3] * y_scale))
+        ctx.line_to(face[0][2] - (mouth_x[4] * x_scale), face[1][2] - (mouth_y[4] * y_scale))
+        ctx.line_to(face[0][3] - (mouth_x[5] * x_scale), face[1][3] - (mouth_y[5] * y_scale))
+        ctx.line_to(face[0][4] - (mouth_x[6] * x_scale), face[1][4] - (mouth_y[6] * y_scale))
+        ctx.line_to(face[0][5] - (mouth_x[6] * x_scale), face[1][5] - (mouth_y[6] * y_scale))
+        ctx.line_to(face[0][6] - (mouth_x[6] * x_scale), face[1][6] - (mouth_y[6] * y_scale))
+        ctx.line_to(face[0][7] - (mouth_x[7] * x_scale), face[1][7] - (mouth_y[7] * y_scale))
+        ctx.line_to(face[0][8] - (mouth_x[8] * x_scale), face[1][8] - (mouth_y[8] * y_scale))
+        ctx.line_to(face[0][9] - (mouth_x[9] * x_scale), face[1][9] - (mouth_y[9] * y_scale))
+        ctx.line_to(face[0][10], face[1][10] - (mouth_y[9] * y_scale))
         ctx.fill()
-    '''
-    def mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces):  ## To-do: Move faces to xml file
-        ctx.set_source_rgb(1, 1, 1)
-        # Mouth coord driven face
-        x_scale = .5
-        y_scale = -.3
-        
-        
-        ctx.move_to(64, 23 - (mouth_y[3] * y_scale))
-        ctx.line_to(52 - (mouth_x[3] * x_scale), 26 - (mouth_y[3] * y_scale))
-        ctx.line_to(49 - (mouth_x[2] * x_scale), 22 - (mouth_y[2] * y_scale))
-        ctx.line_to(42 - (mouth_x[1] * x_scale), 24 - (mouth_y[1] * y_scale))
-        ctx.line_to(24 - (mouth_x[0] * x_scale), 17 - (mouth_y[0] * y_scale))
-        ctx.line_to(24 - (mouth_x[0] * x_scale), 18 - (mouth_y[0] * y_scale))
-        ctx.line_to(26 - (mouth_x[0] * x_scale), 19 - (mouth_y[0] * y_scale))
-        ctx.line_to(42 - (mouth_x[11] * x_scale), 25 - (mouth_y[11] * y_scale))
-        ctx.line_to(48 - (mouth_x[10] * x_scale), 23 - (mouth_y[10] * y_scale))
-        ctx.line_to(51 - (mouth_x[9] * x_scale), 27 - (mouth_y[9] * y_scale))
-        ctx.line_to(64, 24 - (mouth_y[9] * y_scale))
-
-        ctx.fill()
-        '''
 
     def eye(ctx, eye_r_y, eye_l_y, faces):
+        ctx.set_source_rgb(1, 1, 1)
         x_scale = .5
         y_scale = -.3
-        ctx.move_to(19.4, 3.5)
-        ctx.line_to(23.9, 1.8)
-        ctx.line_to(29.5, 2)
-        ctx.line_to(32.8, 3.6)
-        ctx.line_to(34, 7.3)
-        ctx.line_to(34.2, 9.6)
-        ctx.line_to(31.4, 9.3)
-        ctx.line_to(24, 9)
-        ctx.line_to(18.6, 8.6)
-        ctx.line_to(16.9, 8.2)
-        ctx.line_to(18.1, 7.8)
+        face = faces[0][1][0]   #   Idle, Eye, Right
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        ctx.line_to(face[0][9], face[1][9])
+        ctx.line_to(face[0][10], face[1][10])
+        face = faces[0][1][1]   #   Idle, Eye, Left
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        ctx.line_to(face[0][9], face[1][9])
+        ctx.line_to(face[0][10], face[1][10])
         ctx.fill()
+    
+    def nose(ctx, faces):
+        ctx.set_source_rgb(1, 1, 1)
+        face = faces[0][2][0]   #   Idle, Nose, Right
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        face = faces[0][2][1]   #   Idle, Nose, Left
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.fill()
+
+    def puiple(ctx, eye_r_y, eye_l_y, faces):
+        ctx.set_source_rgb(0, 0, 0)
+        x_scale = .5
+        y_scale = -.3
+        face = faces[0][3][0]   #   Idle, Puiple, Right
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        face = faces[0][3][1]   #   Idle, Puiple, Left
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        ctx.fill()
+
     
     #def pupil():
 
@@ -134,7 +193,7 @@ class Idle():
 
 def main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button):
     
-    start = timer()
+    #start = timer()
     faces = (load_faces(), "test")
     #end = timer()
     #print('load_time: ' + str(end - start))
@@ -144,11 +203,13 @@ def main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button):
     #mouth_y = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     Idle.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
     Idle.eye(ctx, eye_r_y, eye_l_y, faces)
+    Idle.nose(ctx, faces)
+    Idle.puiple(ctx, eye_r_y, eye_l_y, faces)
     #print(mouth_y)
     
     buf = surface.get_data()
-    end = timer()
-    print('render_time: ' + str(end - start))
+    #end = timer()
+    #print('render_time: ' + str(end - start))
     return buf
     
     #Blank.draw(ctx)

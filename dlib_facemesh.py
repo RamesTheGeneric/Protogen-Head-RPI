@@ -11,8 +11,8 @@ import constants_dlib
 import face_dlib
 import socket
 
-                                                            #Todo: Figure out what the fuck is going on with the face landmarks
-                                                            #Todo: Make the face landmarks consistant by using a fixed box instead of object detector
+                                                            #   Here's the spaghetti bowl
+                                                            
 def create_blank(width, height, rgb_color=(0, 0, 0)):
     image = np.zeros((height, width, 3), np.uint8)
     color = tuple(reversed(rgb_color))
@@ -64,7 +64,7 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     button = [0]
     mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated, center_mouth, idle_x, idle_y = constants_dlib.process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calibrated, center_mouth, idle_x, idle_y)
                                                                                                  #FaceCoords
-    w, h = DISPLAY_WIDTH, DISPLAY_HEIGHT
+    w, h = DISPLAY_WIDTH * 2, DISPLAY_HEIGHT
     surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, w, h)
     ctx = cairo.Context (surface)
     # creating a cairo context object
@@ -82,7 +82,7 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
 
     ##  Draws Face Image from generated face Mask
     #image = load_bg_image(DISPLAY_WIDTH, DISPLAY_HEIGHT, 'faces/brown.png')
-    image = create_blank(DISPLAY_WIDTH, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
+    image = create_blank(DISPLAY_WIDTH * 2, DISPLAY_HEIGHT, rgb_color = color) #Makes blank bg image
     maskimage = array #Reads Mask image
     ret, maskimage = cv2.threshold(maskimage, 50, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
     res = cv2.bitwise_and(image, maskimage)  #Mask the base image
@@ -93,7 +93,7 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     #Convert the image from CV2 to PIL
     im_pil = Image.fromarray(res)
     img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with size of both panels
-    img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
+    #img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
     img_out.paste(im_pil, (0, 0)) #Write image on L_Display
 
     # cv2.waitKey(1)
