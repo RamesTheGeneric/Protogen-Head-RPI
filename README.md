@@ -39,7 +39,6 @@ New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filt
 
 ## To do (By Priority): ##
 
-* UDP Button server/client
 * Finish drawing the other faces
 * Add Linear Transistion between faces
 * Add filtering to the landmarks
