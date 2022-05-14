@@ -19,8 +19,10 @@ def process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calib
 			y.append(lm[1])
 	except:
 		print("X/Y Index out of range")
-
-	center_mouth = (average((x[3], x[9])), average((y[0], y[6])))
+	try:
+		center_mouth = (average((x[3], x[9])), average((y[0], y[6])))
+	except:
+		print("center_mouth index out of range")
 	if calibrated == False:
 		idle_x = []
 		idle_y = []

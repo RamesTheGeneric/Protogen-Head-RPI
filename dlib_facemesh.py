@@ -9,7 +9,7 @@ from threading import Thread
 import math
 import constants_dlib
 import face_dlib
-import socket
+import socket, pickle
 
                                                             #   Here's the spaghetti bowl
                                                             
@@ -53,7 +53,7 @@ def init():
   
 matrix = None
 
-def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrated, center_mouth):
+def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrated, center_mouth, button):
     DISPLAY_WIDTH = 64     # L_DISPLAY 0-64, R_DISPLAY = 65-128
     DISPLAY_HEIGHT = 32
     IM_SCALE = 4
@@ -61,7 +61,6 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     brightness = 0.8
 
     color = (255 * brightness, 0 * brightness , 0 * brightness)
-    button = [0]
     mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated, center_mouth, idle_x, idle_y = constants_dlib.process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calibrated, center_mouth, idle_x, idle_y)
                                                                                                  #FaceCoords
     w, h = DISPLAY_WIDTH * 2, DISPLAY_HEIGHT
@@ -75,7 +74,7 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     ctx.fill()
     eye_l_y = "placeholder"
                                     # RightFace
-    buf = face_dlib.main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button) 		#Face File
+    buf = face_dlib.main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button) 		######Face File
 
     array = np.ndarray (shape=(h,w,4), dtype=np.uint8, buffer=buf)
     array = array[:,:,:3]
@@ -86,8 +85,7 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     maskimage = array #Reads Mask image
     ret, maskimage = cv2.threshold(maskimage, 50, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
     res = cv2.bitwise_and(image, maskimage)  #Mask the base image
-    up_res = cv2.resize(res, (DISPLAY_WIDTH * IM_SCALE, DISPLAY_HEIGHT * IM_SCALE), 0, 0, interpolation = cv2.INTER_NEAREST)
-    # cv2.imshow('up_res', up_res)  #Display Image
+
 
 
     #Convert the image from CV2 to PIL
@@ -116,12 +114,17 @@ class UdpServer():
         self.thread.start()
 
     def listen(self):
+        self.data = None
         while True:
-            self.data, self.addr = self.sock.recvfrom(1024)
+            self.data, self.addr = self.sock.recvfrom(4096)
+            self.data = pickle.loads(self.data)
+
+
             print(f'got: {self.data} from: {self.addr}')
 
     def get_data(self):
-        return self.data
+        if self.data:
+            return self.data
 
 
 
@@ -203,6 +206,7 @@ def main():
     init()
     width = 320
     height = 240
+    button = ("face_1", "blush_0")
     
     idle_x = []
     idle_y = []
@@ -215,15 +219,18 @@ def main():
     center_mouth = 0
 
     while True:
-        try: 
-            data = udp_server.get_data
-            #print(str(data))
-        except:
-            print("UDP Thread Failed!")
+        #try: 
+        input = udp_server.get_data()
+        if input and not input == button:
+            button = input
+
+
+        #except:
+           # print("UDP Thread Failed!")
         try:
             face_landmarks, eye_r, eye_l = threaded_face.get_landmarks()
             if len(face_landmarks) > 0:
-                calibrated, center_mouth, idle_x, idle_y = render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrated, center_mouth)
+                calibrated, center_mouth, idle_x, idle_y = render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrated, center_mouth, button)
         except AttributeError:
             #print("failed to render")
             pass
