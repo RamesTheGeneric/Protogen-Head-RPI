@@ -39,7 +39,7 @@ New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filt
 
 ## To do (By Priority): ##
 
-* Finish drawing the other faces
+* Make socket input function without a router (p2p via bluetooth or WiFi Direct)
 * Add Linear Transistion between faces
 * Add filtering to the landmarks
 * Add controller input (cheapo vr controller for now)
