@@ -28,9 +28,9 @@ The sbc takes the camera feed and processes the frames with mediapipe facemesh t
 New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filtering but it looks really promising.
 
 ## Implemented Models: ##
-- [x] Dlib HOG Face Detector for full bounding box
-- [ ] Dlib HOG Face Detector for detecting mouth presence (To-do)
-- [x] Dlib Shape Predictor for Mouth Landmarks
+- [x] Custom Dlib HOG Face Detector for full bounding box
+- [ ] Custom Dlib HOG Face Detector for detecting mouth presence (To-do)
+- [x] Custom Dlib Shape Predictor for Mouth Landmarks
 
 
 
