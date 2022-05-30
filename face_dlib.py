@@ -8,7 +8,7 @@
 #       3: Sad
 #       4: OWO
 #       5: The Rock
-#       6:
+#       6: XD
 #       7: 
 
 #   +++++Second+++++
@@ -80,13 +80,15 @@ def load_faces():
     sad = read_face('faces/sad_m.svg')
     owo = read_face('faces/owo_m.svg')
     rock = read_face('faces/rock_m.svg')
+    xd = read_face('faces/xd_m.svg')
     faces = (
         idle, 
         tired, 
         annoyed, 
         sad, 
         owo, 
-        rock
+        rock,
+        xd
         )
     return faces
 
@@ -738,49 +740,202 @@ class Rock():
         ctx.line_to(face[0][8], face[1][8])
         ctx.fill()
 
-def main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button):
+class XD():
+    def mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces):  ## To-do: Move faces to xml file
+        ctx.set_source_rgb(1, 1, 1)
+        # Mouth coord driven face
+        x_scale = .5
+        y_scale = -.3
+        #print(str(faces))
+        face = faces[6][0][0]   #   Idle, Mouth, Right
+        #                   |Feature|l/r
+        #print(faces)
+        ctx.move_to(face[0][0], face[1][0] - (mouth_y[3] * y_scale))
+        ctx.line_to(face[0][1] - (mouth_x[3] * x_scale), face[1][1] - (mouth_y[3] * y_scale))
+        ctx.line_to(face[0][2] - (mouth_x[2] * x_scale), face[1][2] - (mouth_y[2] * y_scale))
+        ctx.line_to(face[0][3] - (mouth_x[1] * x_scale), face[1][3] - (mouth_y[1] * y_scale))
+        ctx.line_to(face[0][4] - (mouth_x[0] * x_scale), face[1][4] - (mouth_y[0] * y_scale))
+        ctx.line_to(face[0][5] - (mouth_x[0] * x_scale), face[1][5] - (mouth_y[0] * y_scale))
+        ctx.line_to(face[0][6] - (mouth_x[0] * x_scale), face[1][6] - (mouth_y[0] * y_scale))
+        ctx.line_to(face[0][7] - (mouth_x[11] * x_scale), face[1][7] - (mouth_y[11] * y_scale))
+        ctx.line_to(face[0][8] - (mouth_x[10] * x_scale), face[1][8] - (mouth_y[10] * y_scale))
+        ctx.line_to(face[0][9] - (mouth_x[9] * x_scale), face[1][9] - (mouth_y[9] * y_scale))
+        ctx.line_to(face[0][10], face[1][10] - (mouth_y[9] * y_scale))
+
+        face = faces[6][0][1]   #   Idle, Mouth, Left
+        ctx.move_to(face[0][0], face[1][0] - (mouth_y[3] * y_scale))
+        ctx.line_to(face[0][1] - (mouth_x[3] * x_scale), face[1][1] - (mouth_y[3] * y_scale))
+        ctx.line_to(face[0][2] - (mouth_x[4] * x_scale), face[1][2] - (mouth_y[4] * y_scale))
+        ctx.line_to(face[0][3] - (mouth_x[5] * x_scale), face[1][3] - (mouth_y[5] * y_scale))
+        ctx.line_to(face[0][4] - (mouth_x[6] * x_scale), face[1][4] - (mouth_y[6] * y_scale))
+        ctx.line_to(face[0][5] - (mouth_x[6] * x_scale), face[1][5] - (mouth_y[6] * y_scale))
+        ctx.line_to(face[0][6] - (mouth_x[6] * x_scale), face[1][6] - (mouth_y[6] * y_scale))
+        ctx.line_to(face[0][7] - (mouth_x[7] * x_scale), face[1][7] - (mouth_y[7] * y_scale))
+        ctx.line_to(face[0][8] - (mouth_x[8] * x_scale), face[1][8] - (mouth_y[8] * y_scale))
+        ctx.line_to(face[0][9] - (mouth_x[9] * x_scale), face[1][9] - (mouth_y[9] * y_scale))
+        ctx.line_to(face[0][10], face[1][10] - (mouth_y[9] * y_scale))
+        ctx.fill()
+
+    def eye(ctx, eye_r_y, eye_l_y, faces):
+        ctx.set_source_rgb(1, 1, 1)
+        x_scale = .5
+        y_scale = -.3
+        face = faces[6][1][0]   #   Idle, Eye, Right
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        ctx.line_to(face[0][9], face[1][9])
+        ctx.line_to(face[0][10], face[1][10])
+        face = faces[6][1][1]   #   Idle, Eye, Left
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        ctx.line_to(face[0][9], face[1][9])
+        ctx.line_to(face[0][10], face[1][10])
+        ctx.fill()
     
-    #start = timer()
+    def nose(ctx, faces):
+        ctx.set_source_rgb(1, 1, 1)
+        face = faces[6][2][0]   #   Idle, Nose, Right
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        face = faces[6][2][1]   #   Idle, Nose, Left
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.fill()
+
+    def puiple(ctx, eye_r_y, eye_l_y, faces):
+        ctx.set_source_rgb(0, 0, 0)
+        x_scale = .5
+        y_scale = -.3
+        face = faces[6][3][0]   #   Idle, Puiple, Right
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        face = faces[6][3][1]   #   Idle, Puiple, Left
+        ctx.move_to(face[0][0], face[1][0])
+        ctx.line_to(face[0][1], face[1][1])
+        ctx.line_to(face[0][2], face[1][2])
+        ctx.line_to(face[0][3], face[1][3])
+        ctx.line_to(face[0][4], face[1][4])
+        ctx.line_to(face[0][5], face[1][5])
+        ctx.line_to(face[0][6], face[1][6])
+        ctx.line_to(face[0][7], face[1][7])
+        ctx.line_to(face[0][8], face[1][8])
+        ctx.fill()
+def main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button):
     faces = load_faces()
-    #end = timer()
-    #print('load_time: ' + str(end - start))
-    #print('memory: ' + str(storage))
-    #print(faces)
-    #mouth_x = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    #mouth_y = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    try:
+        if any("face_1" in s for s in button) or len(button) == 0:
+            Idle.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Idle.eye(ctx, eye_r_y, eye_l_y, faces)
+            Idle.nose(ctx, faces)
+            Idle.puiple(ctx, eye_r_y, eye_l_y, faces)
 
-    #print(button)
-    #print(f'face: {button}')
-    if any("face_1" in s for s in button) or len(button) == 0:
-        Idle.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
-        Idle.eye(ctx, eye_r_y, eye_l_y, faces)
-        Idle.nose(ctx, faces)
-        Idle.puiple(ctx, eye_r_y, eye_l_y, faces)
+        if any("face_2" in s for s in button):
+            Tired.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Tired.eye(ctx, eye_r_y, eye_l_y, faces)
+            Tired.nose(ctx, faces)
+            Tired.puiple(ctx, eye_r_y, eye_l_y, faces)
 
-    if any("face_2" in s for s in button):
-        Tired.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
-        Tired.eye(ctx, eye_r_y, eye_l_y, faces)
-        Tired.nose(ctx, faces)
-        Tired.puiple(ctx, eye_r_y, eye_l_y, faces)
+        if any("face_3" in s for s in button):
+            Annoyed.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Annoyed.eye(ctx, eye_r_y, eye_l_y, faces)
+            Annoyed.nose(ctx, faces)
+            Annoyed.puiple(ctx, eye_r_y, eye_l_y, faces)
+        
+        if any("face_4" in s for s in button):
+            Sad.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Sad.eye(ctx, eye_r_y, eye_l_y, faces)
+            Sad.nose(ctx, faces)
+            Sad.puiple(ctx, eye_r_y, eye_l_y, faces)
 
-    if any("face_3" in s for s in button):
-        Annoyed.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
-        Annoyed.eye(ctx, eye_r_y, eye_l_y, faces)
-        Annoyed.nose(ctx, faces)
-        Annoyed.puiple(ctx, eye_r_y, eye_l_y, faces)
+        if any("face_5" in s for s in button):
+            OWO.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            OWO.eye(ctx, eye_r_y, eye_l_y, faces)
+            OWO.nose(ctx, faces)
+            OWO.puiple(ctx, eye_r_y, eye_l_y, faces)
 
-    if any("face_4" in s for s in button):
-        OWO.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
-        OWO.eye(ctx, eye_r_y, eye_l_y, faces)
-        OWO.nose(ctx, faces)
-        OWO.puiple(ctx, eye_r_y, eye_l_y, faces)
+        if any("face_6" in s for s in button):
+            Rock.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Rock.eye(ctx, eye_r_y, eye_l_y, faces)
+            Rock.nose(ctx, faces)
+            Rock.puiple(ctx, eye_r_y, eye_l_y, faces)
 
-    if any("face_5" in s for s in button):
-        Rock.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
-        Rock.eye(ctx, eye_r_y, eye_l_y, faces)
-        Rock.nose(ctx, faces)
-        Rock.puiple(ctx, eye_r_y, eye_l_y, faces)
+        if any('face_7' in s for s in button):
+            XD.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            XD.eye(ctx, eye_r_y, eye_l_y, faces)
+            XD.nose(ctx, faces)
+            XD.puiple(ctx, eye_r_y, eye_l_y, faces)
+    except:
+        print(f"face_dlib.py: List out of range")
+        mouth_x = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        mouth_y = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        if any("face_1" in s for s in button) or len(button) == 0:
+            Idle.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Idle.eye(ctx, eye_r_y, eye_l_y, faces)
+            Idle.nose(ctx, faces)
+            Idle.puiple(ctx, eye_r_y, eye_l_y, faces)
 
+        if any("face_2" in s for s in button):
+            Tired.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Tired.eye(ctx, eye_r_y, eye_l_y, faces)
+            Tired.nose(ctx, faces)
+            Tired.puiple(ctx, eye_r_y, eye_l_y, faces)
+
+        if any("face_3" in s for s in button):
+            Annoyed.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Annoyed.eye(ctx, eye_r_y, eye_l_y, faces)
+            Annoyed.nose(ctx, faces)
+            Annoyed.puiple(ctx, eye_r_y, eye_l_y, faces)
+
+        if any("face_4" in s for s in button):
+            Sad.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Sad.eye(ctx, eye_r_y, eye_l_y, faces)
+            Sad.nose(ctx, faces)
+            Sad.puiple(ctx, eye_r_y, eye_l_y, faces)
+
+        if any("face_5" in s for s in button):
+            OWO.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            OWO.eye(ctx, eye_r_y, eye_l_y, faces)
+            OWO.nose(ctx, faces)
+            OWO.puiple(ctx, eye_r_y, eye_l_y, faces)
+
+        if any("face_6" in s for s in button):
+            Rock.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            Rock.eye(ctx, eye_r_y, eye_l_y, faces)
+            Rock.nose(ctx, faces)
+            Rock.puiple(ctx, eye_r_y, eye_l_y, faces)
+        
+        if any('face_7' in s for s in button):
+            XD.mouth(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, faces)
+            XD.eye(ctx, eye_r_y, eye_l_y, faces)
+            XD.nose(ctx, faces)
+            XD.puiple(ctx, eye_r_y, eye_l_y, faces)
 
     #print(mouth_y)
     

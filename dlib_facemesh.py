@@ -8,8 +8,9 @@ import rgbmatrix
 from threading import Thread
 import math
 import constants_dlib
-import face_dlib
+import face_dlib, face_effect
 import socket, pickle
+
 
                                                             #   Here's the spaghetti bowl
                                                             
@@ -58,9 +59,9 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     DISPLAY_HEIGHT = 32
     IM_SCALE = 4
 
-    brightness = 0.8
+    brightness = 1
 
-    color = (255 * brightness, 0 * brightness , 0 * brightness)
+    color = (255 * brightness, 255 * brightness , 255 * brightness)
     mouth_x, mouth_y, eye_r_x, eye_r_y, calibrated, center_mouth, idle_x, idle_y = constants_dlib.process_landmarks(face_landmarks, eye_r, eye_l, width, height, button, calibrated, center_mouth, idle_x, idle_y)
                                                                                                  #FaceCoords
     w, h = DISPLAY_WIDTH * 2, DISPLAY_HEIGHT
@@ -85,10 +86,14 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     maskimage = array #Reads Mask image
     ret, maskimage = cv2.threshold(maskimage, 50, 255,cv2.THRESH_BINARY)    #Converts mask image to BW
     res = cv2.bitwise_and(image, maskimage)  #Mask the base image
+    res = face_effect.main(res, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button) 
+    res = cv2.cvtColor(res, cv2.COLOR_RGBA2BGRA)  #Changes the color from cv2's BGR to RGB
+
 
 
 
     #Convert the image from CV2 to PIL
+
     im_pil = Image.fromarray(res)
     img_out = Image.new('RGB', (DISPLAY_WIDTH*2, DISPLAY_HEIGHT)) #Create image with size of both panels
     #img_out.paste(ImageOps.mirror(im_pil), (DISPLAY_WIDTH,0)) # Write mirrored image on R_Display
@@ -103,10 +108,36 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
 class UdpServer():
     def __init__(self):
         print('UDP Server Started!')
-        self.hostname = "192.168.137.219"            #           socket.gethostname()
+        self.hostname = "192.168.137.219"            #           socket.gethostname()   # Setup Wifi Direct
         self.ip = socket.gethostbyname(self.hostname)
         self.port = 4269
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind((self.ip, self.port))
+        print(f'Start listening to {self.ip}:{self.port}')
+        self.thread = Thread(target=self.listen, args=())
+        self.thread.daemon = True
+        self.thread.start()
+
+    def listen(self):
+        self.data = None
+        while True:
+            self.data, self.addr = self.sock.recvfrom(4096)
+            self.data = pickle.loads(self.data)
+
+
+            print(f'got: {self.data} from: {self.addr}')
+
+    def get_data(self):
+        if self.data:
+            return self.data
+
+class BlueUdpServer():                  # Implement as TCP
+    def __init__(self):
+        print('Bluetooth UDP Server Started!')
+        self.hostname = "DC:A6:32:20:8B:CD"            #           socket.gethostname()
+        self.ip = 'DC:A6:32:20:8B:CD'  #socket.gethostbyname(self.hostname)''
+        self.port = 4269
+        self.sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_SEQPACKET, socket.BTPROTO_L2CAP)
         self.sock.bind((self.ip, self.port))
         print(f'Start listening to {self.ip}:{self.port}')
         self.thread = Thread(target=self.listen, args=())
@@ -214,6 +245,7 @@ def main():
     
     threaded_face = ThreadedFace(width, height)
     udp_server = UdpServer()
+    blue_udp_server = BlueUdpServer()
 
     calibrated = False
     center_mouth = 0
@@ -221,6 +253,7 @@ def main():
     while True:
         #try: 
         input = udp_server.get_data()
+        #input = blue_udp_server.get_data()
         if input and not input == button:
             button = input
 
@@ -244,3 +277,5 @@ if __name__ == '__main__':
 #sync in /mnt/x/Documents/GitHub/Protogen-Head-RPI: rsync -rP ./*.py pi@192.168.1.130:~/pc_sync
 #powershell ssh: ssh pi@192.168.1.130
 
+
+# pi BT https://bluedot.readthedocs.io/en/latest/pairpiandroid.html
