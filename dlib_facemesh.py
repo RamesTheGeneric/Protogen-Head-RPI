@@ -108,11 +108,13 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
 class UdpServer():
     def __init__(self):
         print('UDP Server Started!')
-        self.hostname = "192.168.137.219"            #           socket.gethostname()   # Setup Wifi Direct
+        #self.hostname = "192.168.1.187"            #       
+        self.hostname = socket.gethostname()   # Setup Wifi Direct
         self.ip = socket.gethostbyname(self.hostname)
         self.port = 4269
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.ip, self.port))
+        print(f'Hostname: {self.hostname}')
         print(f'Start listening to {self.ip}:{self.port}')
         self.thread = Thread(target=self.listen, args=())
         self.thread.daemon = True
@@ -130,7 +132,7 @@ class UdpServer():
     def get_data(self):
         if self.data:
             return self.data
-
+"""
 class BlueUdpServer():                  # Implement as TCP
     def __init__(self):
         print('Bluetooth UDP Server Started!')
@@ -156,6 +158,7 @@ class BlueUdpServer():                  # Implement as TCP
     def get_data(self):
         if self.data:
             return self.data
+"""
 
 
 
@@ -245,7 +248,7 @@ def main():
     
     threaded_face = ThreadedFace(width, height)
     udp_server = UdpServer()
-    blue_udp_server = BlueUdpServer()
+    #blue_udp_server = BlueUdpServer()
 
     calibrated = False
     center_mouth = 0
@@ -262,6 +265,9 @@ def main():
            # print("UDP Thread Failed!")
         try:
             face_landmarks, eye_r, eye_l = threaded_face.get_landmarks()
+
+            if 'calibrate' in str(button):
+                calibrated = False
             if len(face_landmarks) > 0:
                 calibrated, center_mouth, idle_x, idle_y = render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrated, center_mouth, button)
         except AttributeError:

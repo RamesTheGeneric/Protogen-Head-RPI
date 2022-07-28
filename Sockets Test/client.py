@@ -35,13 +35,20 @@ while True:
 
 
 # create socket
+mode = input('Select mode (view, data): ')
+if (mode == 'data'):
+    count = int(input('starting value for the counter: '))
+    end = int(input('end value for the counter: '))
+else: 
+    count = 0
+    end = 1
+
 client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-host_ip = '192.168.137.219' # paste your server ip address here
+host_ip = 'protohead' # paste your server ip address here
 port = 9999
 client_socket.connect((host_ip,port)) # a tuple
 data = b""
 payload_size = struct.calcsize("Q")
-count = 179
 while True:
     while len(data) < payload_size:
         packet = client_socket.recv(8*1024) # 4K
@@ -58,10 +65,11 @@ while True:
     frame = pickle.loads(frame_data)
     #frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     cv2.imshow("RECEIVING VIDEO",frame)
-    #cv2.imwrite(str(count) + ".png", frame)
+    if mode == 'data':
+        cv2.imwrite(str(count) + ".png", frame)
     count += 1
     key = cv2.waitKey(1) & 0xFF
-    if key  == ord('q'):
+    if key  == ord('q') or (count == end and mode == 'data'):
         break
 client_socket.close()
     

@@ -23,10 +23,12 @@ while True:
 '''
 
 # Socket Create
+mode = input("Select Mode (view, data)")
 server_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 host_name  = socket.gethostname()
+print(host_name)
 host_ip = socket.gethostbyname(host_name)
-host_ip = "192.168.137.219"
+host_ip = "192.168.137.130"
 print('HOST IP:',host_ip)
 port = 9999
 socket_address = (host_ip,port)
@@ -58,50 +60,51 @@ while True:
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             faces = detector(gray)
-            
-            for face in faces:
-                print(face)
-                x1 = face.left()
-                y1 = face.top()
-                x2 = face.right()
-                y2 = face.bottom()
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
-                start = timer()
-                landmarks = predictor(gray, face)
-                end = timer()
-                print(end - start)
-                lms = []
-                
-                for n in range(0, 12):
-                    x = landmarks.part(n).x
-                    y = landmarks.part(n).y
-                    lm = (x, y)
-                    lms.append(lm)
-                    print("x: " + str(x) + "y: " + str(y))
-                    if not n == 0:
-                        color = 255 / n 
-                    else: 
-                        color = 0
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-  
-                    # org
-                    org = (x, y)
+            if (mode == "view"):
+                for face in faces:
+                    print(face)
+                    x1 = face.left()
+                    y1 = face.top()
+                    x2 = face.right()
+                    y2 = face.bottom()
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                    start = timer()
+                    landmarks = predictor(gray, face)
+                    end = timer()
+                    print(end - start)
+                    lms = []
                     
-                    # fontScale
-                    fontScale = .3
-                    
-                    # Blue color in BGR
-                    color = (255, 0, 0)
-                    
-                    # Line thickness of 2 px
-                    thickness = 1
-                    
-                    # Using cv2.putText() method
-                    cv2.putText(frame, str(n), org, font, 
-                                    fontScale, color, thickness, cv2.LINE_AA)
+                    for n in range(0, 12):
+                        x = landmarks.part(n).x
+                        y = landmarks.part(n).y
+                        lm = (x, y)
+                        lms.append(lm)
+                        print("x: " + str(x) + "y: " + str(y))
+                        if not n == 0:
+                            color = 255 / n 
+                        else: 
+                            color = 0
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+    
+                        # org
+                        org = (x, y)
+                        
+                        # fontScale
+                        fontScale = .3
+                        
+                        # Blue color in BGR
+                        color = (255, 0, 0)
+                        
+                        # Line thickness of 2 px
+                        thickness = 1
+                        
+                        # Using cv2.putText() method
+                        cv2.putText(frame, str(n), org, font, 
+                                        fontScale, color, thickness, cv2.LINE_AA)
 
-                    #cv2.circle(frame, (x, y), 4, (int(color), 0, 0), -1)
-                print(lms)
+                        #cv2.circle(frame, (x, y), 4, (int(color), 0, 0), -1)
+                    print(lms)
+                
                 
 
             #debug shit

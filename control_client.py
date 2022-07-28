@@ -8,7 +8,7 @@ def start():
     if bluetooth == False:                  #Implement BT server Code as TCP
         global ip, port, sock, msg
 
-        ip = "192.168.137.219"
+        ip = "protohead"
         port = 4269
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     else:
@@ -18,7 +18,7 @@ def start():
         #sock.connect((ip, port))
 def main():
     while True:
-        print('Faces = face_#, overlay_#')
+        print('Commands: (Faces = face_#, overlay_#), (calibrate)')
         msg = input('Type Face: ')
         msg = msg.split()
         send(msg)
@@ -26,7 +26,7 @@ def main():
 
 if __name__ == "__main__":
 
-    bluetooth = True
+    bluetooth = False
     start()
     main()
 

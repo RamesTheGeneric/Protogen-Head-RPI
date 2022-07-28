@@ -35,6 +35,7 @@ from re import S
 from sqlite3 import DatabaseError
 from xml.dom import minidom
 from timeit import default_timer as timer
+from time import sleep
 import ring
 storage = {}
 @ring.dict(storage, expire=1)       # Cache the loaded files into ram for the next call
@@ -942,6 +943,7 @@ def main(ctx, mouth_x, mouth_y, eye_r_y, eye_l_y, surface, button):
     buf = surface.get_data()
     #end = timer()
     #print('render_time: ' + str(end - start))
+    #sleep(0.015)
     return buf
     
     #Blank.draw(ctx)
