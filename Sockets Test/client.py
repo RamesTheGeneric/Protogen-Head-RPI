@@ -44,7 +44,10 @@ else:
     end = 1
 
 client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-host_ip = 'protohead' # paste your server ip address here
+host_name = 'protohead'
+host_ip = socket.gethostbyname(host_name)
+#host_ip = '127.0.1.1' # paste your server ip address here
+print(f'Host IP: {host_name}')
 port = 9999
 client_socket.connect((host_ip,port)) # a tuple
 data = b""
