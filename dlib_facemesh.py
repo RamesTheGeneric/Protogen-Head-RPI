@@ -1,15 +1,18 @@
 import dlib
+from time import sleep
 from PIL import Image, ImageOps
 import cv2
 from matplotlib import image
 import numpy as np
 import cairo
 import rgbmatrix
-from threading import Thread
+from threading import Thread, Event
+import netifaces as ni
 import math
 import constants_dlib
 import face_dlib, face_effect
 import socket, pickle
+import argparse
 
 
                                                             #   Here's the spaghetti bowl
@@ -26,6 +29,10 @@ def load_bg_image(width, height, path):
     image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
+
+def get_ip_address():       #   Gets the current IP of the WLAN adapter
+    ips = str(ni.ifaddresses('wlan0')[ni.AF_INET][0]['addr'])
+    return ips
 
   
 def average(lst):
@@ -106,12 +113,18 @@ def render(face_landmarks, eye_r, eye_l, width, height, idle_x, idle_y, calibrat
     return calibrated, center_mouth, idle_x, idle_y
 
 class UdpServer():
-    def __init__(self):
+    def __init__(self, run = None):
         print('UDP Server Started!')
-        #self.hostname = "192.168.1.187"            #       
-        self.hostname = socket.gethostname()   # Setup Wifi Direct
-        self.ip = socket.gethostbyname(self.hostname)
-        self.port = 4269
+        #self.hostname = "192.168.1.187"            #   
+        if run == 'main':
+            self.hostname = socket.gethostname()   # Setup Wifi Direct
+            #self.ip = socket.gethostbyname(self.hostname)
+            self.ip = get_ip_address()
+        else:
+            self.hostname = socket.gethostname()
+            self.ip = socket.gethostbyname('localhost')
+
+        self.port = 7171
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.ip, self.port))
         print(f'Hostname: {self.hostname}')
@@ -127,7 +140,7 @@ class UdpServer():
             self.data = pickle.loads(self.data)
 
 
-            print(f'got: {self.data} from: {self.addr}')
+            print(f'Dlib: got: {self.data} from: {self.addr}')
 
     def get_data(self):
         if self.data:
@@ -226,6 +239,7 @@ class ThreadedFace(object):
                 self.eye_l = "yeah"
             else:
                 print('no face detected :(') 
+                sleep(.5)
         print('Capture didn' + "'" + 't open')
 
 
@@ -233,8 +247,7 @@ class ThreadedFace(object):
         return self.face_landmarks, self.eye_r, self.eye_l
 
 
-
-def main():
+def main(event, run = None):
 
 
     init()
@@ -247,7 +260,7 @@ def main():
 
     
     threaded_face = ThreadedFace(width, height)
-    udp_server = UdpServer()
+    udp_server = UdpServer(run)
     #blue_udp_server = BlueUdpServer()
 
     calibrated = False
@@ -274,10 +287,22 @@ def main():
             #print("failed to render")
             pass
 
+        while event.is_set == True:
+            print('Dlib thread waiting')
+            sleep(3)
+            
 
-if __name__ == '__main__':
 
-    main()
+parser = argparse.ArgumentParser(description='MainProtogenFaceScript')
+parser.add_argument('--run', help='Run the main loop')
+args = parser.parse_args()
+run = args.run
+if run == 'main':
+    class Event:
+        is_set = False
+    main(Event, run)
+else: 
+    print('No run argument')
 
 
 #sync in /mnt/x/Documents/GitHub/Protogen-Head-RPI: rsync -rP ./*.py pi@192.168.1.130:~/pc_sync

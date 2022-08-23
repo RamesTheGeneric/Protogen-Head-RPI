@@ -1,33 +1,38 @@
-import socket, pickle
+import socket, pickle, argparse
 
 def send(msg):
     data_string = pickle.dumps(msg)
     sock.sendto(data_string, (ip, port))
 
-def start():
-    if bluetooth == False:                  #Implement BT server Code as TCP
-        global ip, port, sock, msg
 
-        ip = "protohead"
-        port = 4269
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    else:
-        ip = 'DC:A6:32:20:8B:CD'
-        port = 1
-        sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_SEQPACKET, socket.BTPROTO_L2CAP)  #socket.SOCK_STREAM
-        #sock.connect((ip, port))
+def start(ip):               #Implement BT server Code as TCP
+    global port, sock, msg
+
+    
+    #ip = "protohead"
+    #ip = socket.gethostbyname('localhost')
+    print(f'control client ip: {ip}')
+    port = 7171
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 def main():
     while True:
         print('Commands: (Faces = face_#, overlay_#), (calibrate)')
-        msg = input('Type Face: ')
+        try:
+            msg = input('Type Face: ')
+        except: 
+            print('couldent read msg')
         msg = msg.split()
         send(msg)
 
 
 if __name__ == "__main__":
-
+    parser = argparse.ArgumentParser(description='UDPCommandSender')
+    parser.add_argument('--ip', help='The IP address of the host device you are trying to connect to.', default='localhost')
+    args = parser.parse_args()
+    ip = args.ip
     bluetooth = False
-    start()
+    start(ip)
     main()
 
 
