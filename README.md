@@ -1,5 +1,5 @@
 
-Complete rewrite is in order as this current codebase has served as a testbed and a learning tool. The rewrite will take place in a new branch when I get around to it. It'll use the Project Babble facetracker for blendshapes instead of dlib landmarks meaning svg files for blendshapes. It'll also have many of the features such as camera view, remote control, etc implemented from the start. Pretty sure I'm just writing this for myself but atleast i'll remember after mff.
+Complete rewrite is in order as this current codebase has served as a testbed and a learning tool. The rewrite will take place in a new branch when I get around to it. It'll use a blendshape facetracker for shapekeys instead of dlib landmarks meaning obj files for blendshapes. It'll also have many of the features such as camera view, remote control, etc implemented from the start. Pretty sure I'm just writing this for myself but atleast i'll remember after mff.
 
 
 
