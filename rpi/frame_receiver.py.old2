@@ -1,0 +1,22 @@
+import cv2
+from threading import Thread
+from PIL import Image
+import time
+
+class FrameReciever():
+    def __init__(self, stream):
+        self.cap = cv2.VideoCapture(stream)
+        self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        self.thread = Thread(target=self.update, args=())
+        self.thread.daemon = True
+        self.thread.start()
+    
+    def update(self):
+        while True:
+            if self.cap.isOpened():
+                (self.check, self.frame) = self.cap.read()
+                #print('got frame')
+
+    def get_frame(self):
+        try: return Image.fromarray(cv2.resize(self.frame, (128, 32), interpolation = cv2.INTER_AREA))
+        except: return "No Frame"

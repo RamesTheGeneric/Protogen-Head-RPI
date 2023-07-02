@@ -1,0 +1,14 @@
+import cv2
+from threading import Thread
+from PIL import Image
+import time
+
+class FrameReciever():
+    def __init__(self, stream):
+        self.cap = cv2.VideoCapture(stream)
+    
+    def update(self):
+        if self.cap.isOpened():
+            (self.check, self.frame) = self.cap.read()
+            print('got frame')
+            return Image.fromarray(self.frame)
