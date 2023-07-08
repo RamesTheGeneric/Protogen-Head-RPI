@@ -1,0 +1,1 @@
+./ustreamer/ustreamer --host=192.168.1.236 --encoder=M2M-VIDEO --format=MJPEG --resolution=640x480 --desired-fps=90 --h264-bitrate 3000
