@@ -37,25 +37,3 @@ class FrameReciever():
     def get_frame(self):
         return self.img
 
-'''
-    def main():
-        BUFF_SIZE = 13000
-        client_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        client_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
-        host_name = socket.gethostname()
-        host_ip = '192.168.1.167'#  socket.gethostbyname(host_name)
-        print(host_ip)
-        port = 9999
-        message = b'Hello'
-
-        client_socket.sendto(message,(host_ip,port))
-        fps,st,frames_to_count,cnt = (0,0,20,0)
-
-        while True:
-            packet,_ = client_socket.recvfrom(BUFF_SIZE)
-            data = base64.b64decode(packet,' /')
-            npdata = np.fromstring(data,dtype=np.uint8)
-            img = cv2.imdecode(npdata,1)
-            img = Image.fromarray(img)
-            matrix.SetImage(img)
-'''

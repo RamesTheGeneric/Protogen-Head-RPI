@@ -1,6 +1,6 @@
 
 # This is server code to send video frames over UDP
-import cv2, imutils, socket
+import cv2, socket
 import numpy as np
 import time
 import base64
@@ -23,9 +23,10 @@ while True:
 		while True:
 			while(vid.isOpened()):
 				_,frame = vid.read()
+				frame = cv2.imread("renderer/out.png")
 				frame = cv2.resize(frame,(128, 32))
 				frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-				encoded,buffer = cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,80])
+				encoded,buffer = cv2.imencode('.png',frame)
 				message = base64.b64encode(buffer)
 				server_socket.sendto(message,('192.168.1.236', port))
 				#frame = cv2.putText(frame,'FPS: '+str(fps),(10,40),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
