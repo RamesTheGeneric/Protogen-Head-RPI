@@ -1,23 +1,17 @@
 
-Complete rewrite is in order as this current codebase has served as a testbed and a learning tool. The rewrite will take place in a new branch when I get around to it. It'll use a blendshape facetracker for shapekeys instead of dlib landmarks meaning obj files for blendshapes. It'll also have many of the features such as camera view, remote control, etc implemented from the start. Pretty sure I'm just writing this for myself but atleast i'll remember after mff.
-
-
+Complete rewrite from V1 as it was initally used as a learning tool. 
 
 # Protogen-Head-RPI
-Software for RPI based Protogen Heads
-
+Software for interfacing with displays and sensors for RPI based Protogen Heads.
 Made for 64x32x2 matricies
-Tested on RPI 4 4GB
+Tested on RPI 4 2GB
+
+# Protogen-Head-ROCK5B
+Software for processing the Babble model and display rendering. 
 
 
-
-
-~~Runs TFLite Implementation of Mediapipe~~
-
-Runs custom Dlib shape predictor. 
-
-
-dlib_facemesh.py is the Main file for now. I'm still messing around. 
+Runs a customized Babble mouth tracker model based on Mobileone. 
+Project Babble repo: https://github.com/SummerSigh/ProjectBabble
 
 
 https://user-images.githubusercontent.com/53163624/167325850-92f9755d-7d87-4397-bf45-9e34f66615f9.mp4
@@ -26,16 +20,16 @@ https://user-images.githubusercontent.com/53163624/167325850-92f9755d-7d87-4397-
 
 ## How it works: ##
 
-The sbc takes the camera feed and processes the frames with mediapipe facemesh to return landmarks. The user presses a button to "reset" the "reference coordinates" which are then used to calculate landmark offsets as a normalized value to the video frame. In another thread, The different faces are drawn based on the button input. Each face is defined as a vector graphic being drawn with cario. The anchors are then manually assigend to different offsets from the landmark detector and that moves the anchors to move the mouth and eyes to the user's face. 
+The rpi broadcasts an mjpeg stream of the internal cameras using ustreamer, udp packets containing imu data, and lisitens for udp packets for the main displays and osc messages for the minioled. 
+The rock5 receives the mjpeg stream and imu data and renders the display using a mesh defined as a set of obj files and broadcasts the final frame. 
 
 ## Current state: ##
 
-New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filtering but it looks really promising.
+Babble model easily runs at a solid 60 fps on the npu. Blendshape predictions, customization shapekeys, and imutracking shapes are all smoothed using a oneeurofilter. 
 
 ## Implemented Models: ##
-- [x] Custom Dlib HOG Face Detector for full bounding box
-- [ ] Custom Dlib HOG Face Detector for detecting mouth presence (To-do)
-- [x] Custom Dlib Shape Predictor for Mouth Landmarks
+- [x] Customized Babble MouthTracker model.
+- [ ] Protogen claw landmark/classifer model. (handtracking but for suit paws)
 
 
 
@@ -44,12 +38,11 @@ New Dlib model tracks ok at ~100 fps. I need to improve the dataset and add filt
 
 ## To do (By Priority): ##
 
-~~* Make socket input function without a router (p2p via bluetooth or WiFi Direct)~~
-* Add Linear Transistion between faces
-* Add filtering to the landmarks
-* Add controller input (cheapo vr controller for now)
-* Add Lucid Glove input (Custom lucid gloves in the shape of protogen claws)
-* Option to offload facemesh processing to another device (another SBC or an android phone)
+* Make socket input function without a router (p2p via bluetooth or WiFi Direct)
+~~* Add Linear Transistion between faces~~
+~~* Add filtering to the shapes~~
+* Add controller input (hand tracker and maybe webui))
+~~* Option to offload facemesh processing to another device (another SBC or an android phone)~~
 * I forgor the rest
 
 
