@@ -38,7 +38,7 @@ class SocketBlaster():
                     encoded,buffer = cv2.imencode('.png',self.frame)
                     message = base64.b64encode(buffer)
                     self.server_socket.sendto(message,(self.client_ip, self.port))
-                    time.sleep(0.016)   # 60hz
+                    time.sleep(0.016)   # 60hz 0.016
             except Exception as error:
                 print(error)
 

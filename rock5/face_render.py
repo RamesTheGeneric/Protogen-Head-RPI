@@ -90,14 +90,14 @@ class Render():
             w[32],
             w[33],
 
-            np.clip(t["/gyro_z"] * .001, 0, 1),
-            (np.clip(t["/gyro_z"] * .001, -1, 0) * -1),
-            np.clip(t["/gyro_y"] * .001, 0, 1),
-            (np.clip(t["/gyro_y"] * .001, -1, 0) * -1),
-            np.clip(t["/gyro_y"] * .0025, 0, 1),
-            (np.clip(t["/gyro_y"] * .0025, -1, 0) * -1),
-            np.clip(t["/gyro_x"] * .0025, 0, 1),
-            (np.clip(t["/gyro_x"] * .0025, -1, 0) * -1),
+            np.clip(t["/gyro_z"] * .1, 0, 1), # .001
+            (np.clip(t["/gyro_z"] * .1, -1, 0) * -1),
+            np.clip(t["/gyro_y"] * .1, 0, 1),
+            (np.clip(t["/gyro_y"] * .1, -1, 0) * -1),
+            np.clip(t["/gyro_y"] * .1, 0, 1), # .0025
+            (np.clip(t["/gyro_y"] * .1, -1, 0) * -1),
+            np.clip(t["/gyro_x"] * .1, 0, 1),
+            (np.clip(t["/gyro_x"] * .1, -1, 0) * -1),
             e[0],
             e[1],
             e[2],
