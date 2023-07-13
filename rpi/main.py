@@ -6,8 +6,10 @@ import time
 import numpy as np
 import os
 import subprocess
+import multiprocessing
 from pythonosc import udp_client
-from icm20948 import ICM20948
+import board
+import adafruit_icm20x
 from threading import Thread
 
 
@@ -21,7 +23,42 @@ class UStreamer():
   def main(self):
     subprocess.run(['bash start_ustreamer.sh'], shell=True)
 
+class OSCReceiver():
+  def __init__(self):
+    self.client = udp_client.SimpleUDPClient('192.168.1.128', 7175)  # It's faster to have this in the main thread for some reason
+    i2c = board.I2C()   # uses board.SCL and board.SDA
+    self.imu = adafruit_icm20x.ICM20948(i2c, address=0x68)
+    self.imu.accelerometer_data_rate = 1125
+    self.imu.gyro_data_rate = 125
+    self.process = multiprocessing.Process(target=self.main, args=())
+    self.process.start()
+    '''
+    self.thread = Thread(target=self.main, args=())
+    self.thread.daemon = True
+    self.thread.start()
+    '''
+
+  def main(self):
+    while True:
+      start = time.time()
+      x, y, z = self.imu.magnetic
+      ax, ay, az = self.imu.acceleration
+      gx, gy, gz = self.imu.gyro
+      self.client.send_message("/accelerometer_x", ax)
+      self.client.send_message("/accelerometer_y", ay)
+      self.client.send_message("/accelerometer_z", az)
+      self.client.send_message("/gyro_x", gx)
+      self.client.send_message("/gyro_y", gy)
+      self.client.send_message("/gyro_z", gz)
+      self.client.send_message("/mag_x", x)
+      self.client.send_message("/mag_y", y)
+      self.client.send_message("/mag_z", z)
+      end = time.time()
+      print(1/(end-start))
+      #time.sleep(0.0166)
+
 def init():
+  osc = OSCReceiver()
   ustreamer = UStreamer()
   global matrix
   options = rgbmatrix.RGBMatrixOptions()
@@ -43,8 +80,6 @@ class Pages():
     return Image.fromarray(np.random.randint(255, size=(128,32,3),dtype=np.uint8))
 
 def main():
-  imu = ICM20948()
-  client = udp_client.SimpleUDPClient('192.168.1.128', 7175)  # It's faster to have this in the main thread for some reason
   pg = Pages()
   fr = FrameReciever('192.168.1.236') # PC Streamer for testing
 
@@ -57,18 +92,6 @@ def main():
 
     if page == 1:
       frame = pg.noise()
-
-    x, y, z = imu.read_magnetometer_data()
-    ax, ay, az, gx, gy, gz = imu.read_accelerometer_gyro_data()
-    client.send_message("/accelerometer_x", ax)
-    client.send_message("/accelerometer_y", ay)
-    client.send_message("/accelerometer_z", az)
-    client.send_message("/gyro_x", gx)
-    client.send_message("/gyro_y", gy)
-    client.send_message("/gyro_z", gz)
-    client.send_message("/mag_x", x)
-    client.send_message("/mag_y", y)
-    client.send_message("/mag_z", z)
 
     matrix.SetImage(frame)
     end = time.time()
