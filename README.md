@@ -61,6 +61,6 @@ Idk what else to put, I wrote this in like 2 minutes
 
 ## Contact ##
 
-Discord: ramesthegeneric
-Idk how to run a discord server: https://discord.gg/w2ArxtrSjC
+* Discord: ramesthegeneric
+* Idk how to run a discord server: https://discord.gg/w2ArxtrSjC
 
