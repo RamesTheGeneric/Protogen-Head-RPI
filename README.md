@@ -4,7 +4,8 @@ Complete rewrite from V1 as it was initally used as a learning tool.
 # Protogen-Head-RPI
 Software for interfacing with displays and sensors for RPI based Protogen Heads.
 Made for 64x32x2 matricies
-Tested on RPI 4 2GB
+Tested on RPI 4 2GB but it should work on any multicore rpi.
+NOTE: I'm only using a pi for the led matrix libs. Otherwise I'd probably only use the rock board. 
 
 # Protogen-Head-ROCK5B
 Software for processing the Babble model and display rendering. 
