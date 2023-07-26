@@ -42,11 +42,9 @@ Babble model easily runs at a solid 60 fps on the npu. Blendshape predictions, c
 
 ## To do (By Priority): ##
 
+* Add controller input (hand tracker and maybe webui for phones))
 * Make socket input function without a router (p2p via bluetooth or WiFi Direct)
-~~* Add Linear Transistion between faces~~
-~~* Add filtering to the shapes~~
-* Add controller input (hand tracker and maybe webui))
-~~* Option to offload facemesh processing to another device (another SBC or an android phone)~~
+* rpi standalone???
 * I forgor the rest
 
 
@@ -63,4 +61,5 @@ Idk what else to put, I wrote this in like 2 minutes
 
 ## Contact ##
 
-Discord: Rames The Generic#3540
+Discord: ramesthegeneric
+
