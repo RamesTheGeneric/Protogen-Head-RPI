@@ -10,11 +10,13 @@ Tested on RPI 4 2GB
 Software for processing the Babble model and display rendering. 
 
 
-Runs a customized Babble mouth tracker model based on Mobileone. 
+Runs a customized Babble mouth tracker model based on [MobileOne](https://github.com/apple/ml-mobileone). 
 Project Babble repo: https://github.com/SummerSigh/ProjectBabble
 
 
-https://user-images.githubusercontent.com/53163624/167325850-92f9755d-7d87-4397-bf45-9e34f66615f9.mp4
+
+
+https://github.com/RamesTheGeneric/Protogen-Head-RPI/assets/53163624/e94f1c84-583c-49f9-831b-e6525cff7ee2
 
 
 
