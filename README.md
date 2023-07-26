@@ -8,9 +8,11 @@ Tested on RPI 4 2GB
 
 # Protogen-Head-ROCK5B
 Software for processing the Babble model and display rendering. 
+Tested on a Rock5B 16GB but I think it should be fine on any rk3588 or even rk3566 board.
 
 
 Runs a customized Babble mouth tracker model based on [MobileOne](https://github.com/apple/ml-mobileone). 
+
 Project Babble repo: https://github.com/SummerSigh/ProjectBabble
 
 
