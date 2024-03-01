@@ -1,4 +1,5 @@
 from obj_parser import load_obj
+from animation_controller import Animation
 import cv2
 import numpy as np
 from one_euro_filter import OneEuroFilter
@@ -12,7 +13,7 @@ class Render():
         self.shape_index = ('Basis', 'jawOpen', 'jawLeft', 'jawRight', 'mouthFunnel', 'mouthPucker', 'mouthLeft', 'mouthRight', 'mouthShrugUpper', 'mouthShrugLower', 'mouthSmileLeft', 'mouthSmileRight', 
         'mouthFrownLeft', 'mouthFrownRight', 'mouthDimpleLeft', 'mouthDimpleRight', 'mouthUpperUpLeft', 'mouthUpperUpRight', 'mouthLowerDownLeft', 'mouthLowerDownRight', 'mouthStretchLeft', 'mouthStretchRight', 'tongueOut',
         'slideLeft', 'slideRight', 'slideUp', 'slideDown', 'rollUp', 'rollDown', 'rollLeft', 'rollRight',
-        'eyes_Angry', 'eyes_Suprised', 'eyes_X', 'mouth_Fangs')
+        'eyes_Angry', 'eyes_Suprised', 'eyes_X', 'mouth_Fangs', 'blinkLeft', 'blinkRight')
         self.shapes = dict(     # 29 tracked shapes 33 total
             Basis = load_obj(path + self.shape_index[0] + '.obj'),
             jawOpen = load_obj(path + self.shape_index[1] + '.obj'),
@@ -51,6 +52,8 @@ class Render():
             eyes_Suprised = load_obj(path + self.shape_index[32] + '.obj'),
             eyes_X = load_obj(path + self.shape_index[33] + '.obj'),
             mouth_Fangs = load_obj(path + self.shape_index[34] + '.obj'),
+            blinkLeft = load_obj(path + self.shape_index[35] + '.obj'),
+            blinkRight = load_obj(path + self.shape_index[36] + '.obj'),
         )
         self.shape_transforms = self.calculate_shape_transforms()
         # OneEuroFilter
@@ -62,9 +65,15 @@ class Render():
             min_cutoff=min_cutoff,
             beta=beta
         )
+        self.animation = Animation()
 
-    def remap_shapes(self, w, t, e):
+        self.gaze_r = [0,0]
+
+    def remap_shapes(self, w, t, e, gaze_r):
         #input 45 babble shapes
+        blinkLeft = self.animation.blink()
+        blinkRight = self.animation.blink()
+        self.gaze_r = gaze_r
         shapes = [
             0,  # Basis
             w[4],
@@ -89,7 +98,6 @@ class Render():
             w[31],
             w[32],
             w[33],
-
             np.clip(t["/gyro_z"] * .1, 0, 1), # .001
             (np.clip(t["/gyro_z"] * .1, -1, 0) * -1),
             np.clip(t["/gyro_y"] * .1, 0, 1),
@@ -102,8 +110,11 @@ class Render():
             e[1],
             e[2],
             e[3],
+            blinkLeft,
+            blinkRight,
         ]
         output = self.filter(np.array(shapes))
+        self.animation.tick()
         return output
 
     
@@ -151,9 +162,36 @@ class Render():
         return vertex_offsets
         
     def draw_face(self, array):
-        image = np.zeros((self.HEIGHT * self.MULTI, self.WIDTH * self.MULTI))
+        image = np.zeros((self.HEIGHT * self.MULTI, self.WIDTH * self.MULTI, 3))
         for face in array:
             contours = np.array(face, np.int32)
-            image = cv2.fillPoly(image, pts = [contours], color =(255,255,255))
+            image = cv2.fillPoly(image, pts = [contours], color =(0,198,255))   # Hardcoded color for me :3
+        #print(self.gaze_r)
+        height, width, channels = image.shape
+        #gazex = self.gaze_r[0] 
+        #gazey = self.gaze_r[1] 
+        gaze = self.gaze_r
+        r_pos = [300, 65]
+        if gaze[0] < 0: r_pos = [r_pos[0] + gaze[0]*80, r_pos[1] + gaze[1]*20]
+        else: r_pos = [r_pos[0] + (gaze[0]*20), r_pos[1] + (gaze[1]*20)]
+        r_pos = [int(x) for x in r_pos]
+
+        l_pos = [width - r_pos[0], r_pos[1]]
+        if gaze[0] > 0: l_pos = [l_pos[0] + gaze[0]*80, l_pos[1] + gaze[1]*20]
+        else: l_pos = [l_pos[0] + (gaze[0]*20), l_pos[1] + (gaze[1]*20)]
+        l_pos = [int(x) for x in l_pos]
+        #print(l_pos)
+        image = cv2.circle(image,   # Right Eye
+                           r_pos, 
+                           radius=35, 
+                           color=(0,0,0),
+                           thickness=-1,    #Solid
+                           )
+        image = cv2.circle(image,   # Left Eye
+                           l_pos, 
+                           radius=35, 
+                           color=(0,0,0),
+                           thickness=-1,    #Solid
+                           )
         image = cv2.resize(image, (self.WIDTH, self.HEIGHT), interpolation = cv2.INTER_AREA)
         return image.astype('float32')

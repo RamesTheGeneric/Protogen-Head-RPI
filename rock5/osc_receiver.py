@@ -6,6 +6,7 @@ class OSCReceiver():
     def __init__(self, hostip):
         self.hostip = hostip
         self.values = {
+            # Tracking Messages
             "/accelerometer_x": 0,
             "/accelerometer_y": 0,
             "/accelerometer_z": 0,
@@ -14,7 +15,13 @@ class OSCReceiver():
             "/gyro_z": 0,
             "/mag_x": 0,
             "/mag_y": 0,
-            "/mag_z": 0
+            "/mag_z": 0,
+            # User Input Messages
+            "/eyes_angry": 0.0,
+            "/eyes_suprised": 0.0,
+            "/eyes_x": 0.0,
+            "/mouth_fangs": 0.0,
+            "/recenter_eyes": 0.0,
             }
         self.thread = threading.Thread(target=self.main, args=())
         self.thread.daemon = True
@@ -39,6 +46,11 @@ class OSCReceiver():
         dispatcher.map("/mag_x", self.message_handler)
         dispatcher.map("/mag_y", self.message_handler)
         dispatcher.map("/mag_z", self.message_handler)
+        dispatcher.map("/eyes_x", self.message_handler)
+        dispatcher.map("/mouth_fangs", self.message_handler)
+        dispatcher.map("/eyes_angry", self.message_handler)
+        dispatcher.map("/eyes_suprised", self.message_handler)
+        dispatcher.map("/recenter_eyes", self.message_handler)
         server = osc_server.ThreadingOSCUDPServer((self.hostip, 7175), dispatcher)
         print("OSC server is running...")
         server.serve_forever()

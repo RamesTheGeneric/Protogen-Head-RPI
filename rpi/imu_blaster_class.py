@@ -15,8 +15,8 @@ class IMUBlaster():
         BUFF_SIZE = 128 
         self.server_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
-        host_ip = '192.168.1.236'#  socket.gethostbyname(host_name)
-        self.client_ip = '192.168.1.128'
+        host_ip = '192.168.253.103'#  socket.gethostbyname(host_name)
+        self.client_ip = '192.168.253.101'
         print(host_ip)
         self.port = 7170
         socket_address = (host_ip,self.port)

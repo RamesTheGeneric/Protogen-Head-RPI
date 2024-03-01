@@ -1,0 +1,1 @@
+./ustreamer/ustreamer --host=192.168.253.100 --port 8081 --device /dev/video1 --encoder=M2M-VIDEO --format=MJPEG --quality=50 --resolution=640x480 --desired-fps=30 

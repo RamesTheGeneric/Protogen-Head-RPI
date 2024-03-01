@@ -4,7 +4,7 @@ import os
 import subprocess
 import signal
 
-BOARD = {
+BOARD = {           # Rock5B Pinout
 3: 71,
 5: 72,
 7: 75,
@@ -40,19 +40,19 @@ GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 run = False
 command = "python main.py"
 while True:
-    try:
-        if GPIO.input(16):  #Button pressed
-            print('Input was HIGH')
-            if run: pass
-            else: 
-                p=subprocess.Popen(command, shell=True, preexec_fn=os.setsid) 
-                run = True
-        else:               # Button Released
-            print('Input was LOW')
-            if run: 
-                os.killpg(p.pid, signal.SIGTERM)
-                run = False
-            else: pass
-    except Exception as e: print(e)
+    if GPIO.input(16):  #Button pressed
+        print('Input was HIGH')
+        if run: pass
+        else: 
+            print('Starting protoserver')
+            p=subprocess.Popen(command, shell=True, preexec_fn=os.setsid) 
+            run = True
+    else:               # Button Released
+        print('Input was LOW')
+        if run: 
+            print('Killing protoserver')
+            os.killpg(p.pid, signal.SIGTERM)
+            run = False
+        else: pass
     time.sleep(1)
 GPIO.cleanup()

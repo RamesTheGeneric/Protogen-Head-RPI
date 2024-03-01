@@ -25,7 +25,7 @@ class UStreamer():
 
 class OSCReceiver():
   def __init__(self):
-    self.client = udp_client.SimpleUDPClient('192.168.1.128', 7175)  # It's faster to have this in the main thread for some reason
+    self.client = udp_client.SimpleUDPClient('192.168.253.101', 7175)  # It's faster to have this in the main thread for some reason
     i2c = board.I2C()   # uses board.SCL and board.SDA
     self.imu = adafruit_icm20x.ICM20948(i2c, address=0x68)
     self.imu.accelerometer_data_rate = 1125
@@ -40,22 +40,24 @@ class OSCReceiver():
 
   def main(self):
     while True:
-      start = time.time()
-      x, y, z = self.imu.magnetic
-      ax, ay, az = self.imu.acceleration
-      gx, gy, gz = self.imu.gyro
-      self.client.send_message("/accelerometer_x", ax)
-      self.client.send_message("/accelerometer_y", ay)
-      self.client.send_message("/accelerometer_z", az)
-      self.client.send_message("/gyro_x", gx)
-      self.client.send_message("/gyro_y", gy)
-      self.client.send_message("/gyro_z", gz)
-      self.client.send_message("/mag_x", x)
-      self.client.send_message("/mag_y", y)
-      self.client.send_message("/mag_z", z)
-      end = time.time()
-      print(1/(end-start))
-      #time.sleep(0.0166)
+      try:
+        start = time.time()
+        x, y, z = self.imu.magnetic
+        ax, ay, az = self.imu.acceleration
+        gx, gy, gz = self.imu.gyro
+        self.client.send_message("/accelerometer_x", ax)
+        self.client.send_message("/accelerometer_y", ay)
+        self.client.send_message("/accelerometer_z", az)
+        self.client.send_message("/gyro_x", gx)
+        self.client.send_message("/gyro_y", gy)
+        self.client.send_message("/gyro_z", gz)
+        self.client.send_message("/mag_x", x)
+        self.client.send_message("/mag_y", y)
+        self.client.send_message("/mag_z", z)
+        end = time.time()
+        #print(1/(end-start))
+        #time.sleep(0.0166)
+      except Exception as e: print(f"IMU Send Error: {e}")
 
 def init():
   osc = OSCReceiver()
@@ -81,7 +83,7 @@ class Pages():
 
 def main():
   pg = Pages()
-  fr = FrameReciever('192.168.1.236') # PC Streamer for testing
+  fr = FrameReciever('192.168.253.100') # PC Streamer for testing
 
   while True:
     start = time.time()
